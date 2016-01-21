@@ -1,5 +1,11 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+    h1= title
+    p Welcome to #{title}
+    button(class="btn", onclick="signup()") Sign Up
+
+    script.
+        function signup() {
+            window.location.href = '/SignUp';
+        }
