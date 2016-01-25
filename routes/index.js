@@ -24,30 +24,35 @@ router.get('/About', function(req,res,next) {
 });
 
 router.get('/Databases', function(req,res,next) {
-    var users;
-    var comments;
-    var products;
+    var users = [];
+    var comments = [];
+    var products = [];
 
     var usersDb = connection.query('SELECT * from users', function(err,rows) {
         if(err) throw err;
-
+	
         users = rows;
+
+	var commentsDb = connection.query('SELECT * from comments', function(err, rows) {
+	    if (err) throw err;
+
+	    comments = rows;
+
+	    var productsDb = connection.query('SELECT * from products', function(err, rows) {
+		if (err) throw err;
+
+		products = rows;
+
+		res.write('<br><br>Users<br>');
+		res.write(JSON.stringify(users));
+		res.write('<br><br>Comments<br>');
+		res.write(JSON.stringify(comments));
+		res.write('<br><br>Products<br>');
+		res.write(JSON.stringify(products));
+		res.end();
+	    });
+	});
     });
-
-    var commentsDb = connection.query('SELECT * from comments', function(err, rows) {
-        if (err) throw err;
-
-        comments = rows;
-    });
-
-    var productsDb = connection.query('SELECT * from products', function(err, rows) {
-        if (err) throw err;
-
-        products = rows;
-    })
-
-    res.send(users + comments + products);
-
 });
 
 module.exports = router;
