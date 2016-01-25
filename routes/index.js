@@ -24,11 +24,29 @@ router.get('/About', function(req,res,next) {
 });
 
 router.get('/Databases', function(req,res,next) {
-    var users = connection.query('SELECT * from users', function(err,rows) {
+    var users;
+    var comments;
+    var products;
+
+    var usersDb = connection.query('SELECT * from users', function(err,rows) {
         if(err) throw err;
 
-        res.send(rows);
+        users = rows;
+    });
+
+    var commentsDb = connection.query('SELECT * from comments', function(err, rows) {
+        if (err) throw err;
+
+        comments = rows;
+    });
+
+    var productsDb = connection.query('SELECT * from products', function(err, rows) {
+        if (err) throw err;
+
+        products = rows;
     })
+
+    res.send(users + comments + products);
 
 });
 
