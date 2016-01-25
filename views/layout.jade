@@ -1,15 +1,16 @@
 doctype html
 html
-  head
-      title= title
-      link(rel='stylesheet', href='/stylesheets/style.css')
-      link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css')
-      meta(name="google-signin-scope", content="profile email")
-      meta(name="google-signin-client_id", content="159196631200-d1cf3beikgm0km95rjnvierd952ig5kc.apps.googleusercontent.com")
-  body
-      .container
-          nav(class="navbar navbar-default")
-            .container-fluid
+    head
+        title= title
+        link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css')
+        link(rel='stylesheet', href='/stylesheets/style.css')
+
+        meta(name="google-signin-scope", content="profile email")
+        meta(name="google-signin-client_id", content="CLIENT_ID.apps.googleusercontent.com")
+    body
+
+        nav(class="navbar navbar-default navbar-fixed-top")
+            .container
                 .navbar-header
                     button(type="button",class="navbar-toggle collapsed", data-toggle="collapse", data-target="#navbar", aria-expanded=false, aria-controls="navbar")
                         span.sr-only Toggle navigation
@@ -22,13 +23,17 @@ html
                         li
                             a(href="/") Home
                         li
-                            a(href="#") About
+                            a(href="/About") About
                         li
                             a(href="#") Contact
                     ul.nav.navbar-nav.navbar-right
                         li
                             a(href="#") New Posts
                         li
-                            a(href="/SignUp") Sign Up
+                            a(href="/SignUp") Login
+        .container
+            block content
 
-          block content
+        footer(class="footer")
+            .container
+                p(class="text-muted") Project for CS290
