@@ -7,7 +7,7 @@ var connection = mysql.createConnection({
     host: 'localhost',
     user: 'STTserver',
     password: 'tech31',
-    database: 'sttdb'
+    database: 'STTDB'
 });
 
 /* GET home page. */
