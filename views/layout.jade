@@ -6,7 +6,7 @@ html
         link(rel='stylesheet', href='/stylesheets/style.css')
 
         meta(name="google-signin-scope", content="profile email")
-        meta(name="google-signin-client_id", content="CLIENT_ID.apps.googleusercontent.com")
+        meta(name="google-signin-client_id", content="159196631200-d1cf3beikgm0km95rjnvierd952ig5kc.apps.googleusercontent.com")
     body
 
         nav(class="navbar navbar-default navbar-fixed-top")
@@ -27,8 +27,13 @@ html
                     ul.nav.navbar-nav.navbar-right
                         li
                             a(href="#") New Posts
+
                         li
-                            a(href="/SignUp") Login
+                            if(session && session.loggedIn)
+                                if(session.email)
+                                    a(href="/User/" + session.email) #{session.email}
+                            else
+                                a(href="/SignUp") Login
         .container
             block content
 
