@@ -1,0 +1,21 @@
+// Created by Alec on 1/28/2016.
+
+extends layout
+
+block content
+    h1 New Product
+    form(name="newProduct", method="post", enctype="multipart/form-data")
+        .form-group
+            label Name
+            input(type="text", name="productName")
+        .form-group
+            label Logo
+            input(type="file", name="photo")
+        .form-group
+            label Version Number
+            input(type="text", name="version")
+        .form-group
+            label Last Update
+            input(type="date", name="lastUpdate")
+        .form-group
+            input(type="submit", value="Submit", class="btn")

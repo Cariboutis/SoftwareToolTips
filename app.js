@@ -4,7 +4,10 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var mysql = require('mysql');
+var fs = require('fs');
 var session = require('express-session');
+var crypto = require('crypto');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -31,7 +34,15 @@ app.use(session({
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(function(req, res, next) {
+var db = mysql.createConnection({
+    host: 'localhost',
+    user: 'STTserver',
+    password: 'tech31',
+    database: 'STTDB'
+});
+
+app.use(function(req,res,next) {
+    req.db = db;
     res.locals.session = req.session;
     next();
 });
