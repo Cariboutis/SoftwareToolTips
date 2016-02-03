@@ -98,19 +98,16 @@ router.get('/Product/:pname', function(req,res,next) {
 
     var comments = [];
     var product = {};
+    var selectQ = "SELECT * FROM products WHERE productName = \'" + req.params.pname + "\'";
 
-    var productQuery = db.query('SELECT productId, productName, logoUrl, version, lastUpdate FROM products WHERE productName = \'' + req.params.pname + '\'', function(err, rows) {
-        products = rows[0];
+    var productQuery = req.db.query(selectQ,  function(err, rows) {
+        var product = rows[0];
+        res.render('product', { productName : product.productName, logoUrl: product.logoUrl, version: product.version, lastUpdate: product.lastUpdate});
     });
 
-    var commentsQuery = db.query('SELECT commentBody, userId FROM comments WHERE productId = \'' + products , function(err, rows) {
-        comments = rows;
-    });
-
-
-    var jadeRender = function() {
-        res.render('product', { productName : req.params.pname, logoUrl: product.logoUrl, version: product.version, lastUpdate: product.lastUpdate});
-    }
+    //var commentsQuery = req.db.query('SELECT commentBody, userId FROM comments WHERE productId = \'' + product.productId , function(err, rows) {
+    //    comments = rows;
+    //});
 
 
 });
