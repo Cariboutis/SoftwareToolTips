@@ -3,7 +3,10 @@ DROP TABLE IF EXISTS comments,products,users;
 CREATE TABLE users
 (
   userId int NOT NULL AUTO_INCREMENT,
-  userName varchar(31) NOT NULL UNIQUE,
+  email varchar(255) NOT NULL,
+  username varchar(31) NOT NULL,
+  profileImageUrl varchar(255) NOT NULL,
+  bio varchar(511),
   PRIMARY KEY (userId)
 );
 INSERT INTO users (userName) VALUES ('Mrs. Peacock');

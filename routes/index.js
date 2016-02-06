@@ -1,25 +1,9 @@
 var express = require('express');
-var multer = require('multer');
-var crypto = require('crypto');
 var router = express.Router();
 
 var https = require('https');
 var qs = require('querystring');
 
-var storage = multer.diskStorage({
-    destination: function(req,file,cb){
-        cb(null, './public/images/')
-    },
-    filename: function(req,file,cb) {
-        crypto.pseudoRandomBytes(16, function(err, raw) {
-            if (err) return cb(err);
-
-            cb(null, raw.toString('hex') + Date.now() + '.png');
-        });
-    }
-});
-
-var upload = multer({ storage: storage });
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -27,14 +11,22 @@ router.get('/', function(req, res, next) {
     res.render('index', { title: 'Software Tool Tips' });
 });
 
-router.get('/SignUp', function(req,res,next) {
-    req.session.username = "Me!";
-    res.render('login', {title: 'Log In'});
+router.get('/logout', function(req,res) {
+    req.session.destroy();
+    res.render('logout');
+});
+
+router.get('/login', function(req,res,next) {
+    if(req.session.isLoggedIn){
+        res.redirect('/');
+    } else {
+        req.session.username = "Me!";
+        res.render('login', {title: 'Log In'});
+    }
 });
 
 router.post('/tokensignin', function(req,res) {
     var idtoken = req.body.idtoken;
-    var name = req.body.name;
     var email = req.body.email;
 
     var options = {
@@ -44,76 +36,83 @@ router.post('/tokensignin', function(req,res) {
         accept: '*/*'
     };
 
-
     var result = https.request(options, function(response) {
         if(response.statusCode == 200){
-            req.session.loggedIn = true;
+            // User is authenticated by Google
+            req.session.isAuthenticated = true;
             req.session.email = email;
-            req.session.name = name;
+
+            var e = req.db.escape(email);
+            var select = "SELECT userId, username, email FROM users WHERE email = " + e + "";
+
+            req.db.query(select, function(err, rows) {
+                if (err) throw err; // TODO: Handle error gracefully
+                var user = rows[0];
+
+                if(user != undefined){
+                    req.session.isLoggedIn = true;
+                    req.session.user = user;
+                }
+                res.send("OK");
+            });
         }
-
-        console.log(response.statusCode);
-
-        res.send("OK");
     });
 
     result.end();
-
     result.on('error', function(e) {
         console.error(e);
     });
 });
 
-router.get('/About', function(req,res,next) {
+router.get('/login/authenticate', function(req,res) {
+   if(req.session.isLoggedIn){
+       res.redirect('/');
+   } else if(!req.session.isAuthenticated){
+       res.redirect('/login');
+   } else {
+       res.redirect('/createUser');
+   }
+});
+
+router.get('/createUser', function(req,res) {
+    if(req.session.isAuthenticated && !req.session.isLoggedIn){
+        res.render('createUser');
+    } else {
+        res.redirect('/');
+    }
+});
+
+router.post('/createUser', function(req,res) {
+    if(req.session.isLoggedIn || !req.session.isAuthenticated){
+        res.send("What are you trying to do here?");
+    } else {
+        var username = req.body.username;
+        var email = req.session.email;
+
+        var insert = "INSERT INTO users SET ?";
+
+        req.db.query(insert, {username:username,email:email}, function(err, result) {
+            if (err) throw err; // TODO: Handle error gracefully
+
+            var select = "SELECT userId, username, email FROM users WHERE userId = " + result.insertId + "";
+
+            req.db.query(select, function(err, rows) {
+                if (err) throw err; // TODO: Handle error gracefully
+                req.session.isLoggedIn = true;
+                req.session.user = rows[0];
+                res.redirect('/');
+            });
+
+            console.log("Inserted: " + JSON.stringify(result));
+
+        });
+
+    }
+});
+
+router.get('/about', function(req,res) {
     console.log(req.session.works);
     res.render('about');
-});
-
-router.get('/Product/New', function(req,res,next) {
-    res.render('newProduct');
-});
-
-router.post('/Product/New', upload.single('photo'), function (req, res, next) {
-
-    // TODO: Error handling and input validation
-    // TODO: Handle who is posting
-
-    var productName = req.db.escape(req.body.productName);
-    var logoUrl = req.db.escape('/public/images/' + req.file.filename);
-    var versionNum = req.db.escape(req.body.version);
-    var lastUpdate = req.db.escape(req.body.lastUpdate);
-
-    var insert = "INSERT INTO products (productName, logoUrl, version, lastUpdate, userId) VALUES (" + productName + ',' + logoUrl + ',' + versionNum + ',' + lastUpdate + ',1);';
-
-    var query = req.db.query(insert, function(err, rows) {
-        if (err) throw err; // TODO: Handle error gracefully
-
-        console.log("Inserted: " + JSON.stringify(rows));
-    });
-
-    res.redirect('/');
-});
-
-router.get('/Product/:pname', function(req,res,next) {
-
-    var comments = [];
-    var product = {};
-    var selectQ = "SELECT * FROM products WHERE productName = \'" + req.params.pname + "\'";
-
-    var productQuery = req.db.query(selectQ,  function(err, rows) {
-        var product = rows[0];
-        res.render('product', { productName : product.productName, logoUrl: product.logoUrl, version: product.version, lastUpdate: product.lastUpdate});
-    });
-
-    //var commentsQuery = req.db.query('SELECT commentBody, userId FROM comments WHERE productId = \'' + product.productId , function(err, rows) {
-    //    comments = rows;
-    //});
-
-
-});
-
-router.get('/Product', function(req,res,next) {
-    res.render('product');
 });
 
 module.exports = router;

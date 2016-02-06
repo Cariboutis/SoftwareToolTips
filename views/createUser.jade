@@ -1,0 +1,12 @@
+//
+   Created by Nathan on 2/6/2016.
+
+extends layout
+block content
+    h1 New User
+    form(name="newUser", method="post")
+        .form-group
+            label Username
+            input(type="text", name="username")
+        .form-group
+            input(type="submit", value="Submit", class="btn")

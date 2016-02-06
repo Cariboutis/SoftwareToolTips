@@ -28,15 +28,21 @@ html
                         li
                             a(href="#") New Posts
 
-                        li
-                            if(session && session.loggedIn)
-                                if(session.email)
-                                    a(href="/User/" + session.email) #{session.email}
-                            else
-                                a(href="/SignUp") Login
+
+                        if(session && session.isLoggedIn)
+                            li
+                                a(href="/User/" + session.user.userId + "/" + session.user.username) #{session.user.username}
+                            li
+                                a(href="/Logout") Log Out
+                        else
+                            li
+                                a(href="/Login") Login
+                            li
+                                a(href="/Login") Sign Up
         .container
             block content
 
         footer(class="footer")
             .container
                 p(class="text-muted") Project for CS290
+
