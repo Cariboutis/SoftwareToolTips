@@ -8,39 +8,39 @@ html
         meta(name="google-signin-scope", content="profile email")
         meta(name="google-signin-client_id", content="159196631200-d1cf3beikgm0km95rjnvierd952ig5kc.apps.googleusercontent.com")
     body
+        div(id="wrapper")
+            nav(class="navbar navbar-default navbar-fixed-top")
+                .container
+                    .navbar-header
+                        button(type="button",class="navbar-toggle collapsed", data-toggle="collapse", data-target="#navbar", aria-expanded=false, aria-controls="navbar")
+                            span.sr-only Toggle navigation
+                            span.icon-bar
+                            span.icon-bar
+                            span.icon-bar
+                        a.navbar-brand(href="/") Software Tool Tips
+                    #navbar.navbar-collapse.collapse
+                        ul.nav.navbar-nav
+                            li
+                                a(href="/About") About
+                            li
+                                a(href="#") Contact
+                        ul.nav.navbar-nav.navbar-right
+                            li
+                                a(href="#") New Posts
 
-        nav(class="navbar navbar-default navbar-fixed-top")
+
+                            if(session && session.isLoggedIn)
+                                li
+                                    a(href="/User/" + session.user.userId + "/" + session.user.username) #{session.user.username}
+                                li
+                                    a(href="/Logout") Log Out
+                            else
+                                li
+                                    a(href="/Login") Login
+                                li
+                                    a(href="/Login") Sign Up
             .container
-                .navbar-header
-                    button(type="button",class="navbar-toggle collapsed", data-toggle="collapse", data-target="#navbar", aria-expanded=false, aria-controls="navbar")
-                        span.sr-only Toggle navigation
-                        span.icon-bar
-                        span.icon-bar
-                        span.icon-bar
-                    a.navbar-brand(href="/") Software Tool Tips
-                #navbar.navbar-collapse.collapse
-                    ul.nav.navbar-nav
-                        li
-                            a(href="/About") About
-                        li
-                            a(href="#") Contact
-                    ul.nav.navbar-nav.navbar-right
-                        li
-                            a(href="#") New Posts
-
-
-                        if(session && session.isLoggedIn)
-                            li
-                                a(href="/User/" + session.user.userId + "/" + session.user.username) #{session.user.username}
-                            li
-                                a(href="/Logout") Log Out
-                        else
-                            li
-                                a(href="/Login") Login
-                            li
-                                a(href="/Login") Sign Up
-        .container
-            block content
+                block content
 
         footer(class="footer")
             .container

@@ -1,22 +1,43 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+
+html {
+    position: relative;
+    min-height: 100%;
 }
 
-a {
-  color: #00B7FF;
+body {
+    position: relative;
+    margin: 0;
+    padding-bottom: 6rem;
+    padding-top: 6rem;
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    min-height: 100%;
 }
 
 .footer {
+    margin-bottom: -6rem;
+    position: absolute;
     bottom: 0;
     width: 100%;
+    /* Set the fixed height of the footer here */
     height: 60px;
+    background-color: #f5f5f5;
+    display: block;
 }
+
+
+a {
+    color: #00B7FF;
+}
+
+#wrapper {
+    min-height:100%;
+    position:relative;
+}
+
 
 .container .text-muted {
     margin: 20px 0;
 }
-
 
 .center {
     margin: 10% auto auto auto;

@@ -13,6 +13,7 @@ router.get('/', function(req, res, next) {
 
 router.get('/logout', function(req,res) {
     req.session.destroy();
+    res.locals.session = req.session;
     res.render('logout');
 });
 
@@ -21,7 +22,7 @@ router.get('/login', function(req,res,next) {
         res.redirect('/');
     } else {
         req.session.username = "Me!";
-        res.render('login', {title: 'Log In'});
+        res.render('login', {title: 'Log In', server: req.server});
     }
 });
 

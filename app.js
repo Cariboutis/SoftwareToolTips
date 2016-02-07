@@ -16,6 +16,11 @@ var product = require('./routes/product');
 
 var app = express();
 
+const debugServer = "localhost:3000";
+const prodServer = "ec2-52-26-176-89.us-west-2.compute.amazonaws.com:3000";
+
+const SERVER = prodServer;
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -44,6 +49,7 @@ var db = mysql.createConnection({
 app.use(function(req,res,next) {
     req.db = db;
     res.locals.session = req.session;
+    req.server = SERVER;
     next();
 });
 
@@ -82,6 +88,5 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
-
 
 module.exports = app;
