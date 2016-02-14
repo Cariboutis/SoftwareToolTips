@@ -19,7 +19,7 @@ var app = express();
 const debugServer = "localhost:3000";
 const prodServer = "ec2-52-26-176-89.us-west-2.compute.amazonaws.com:3000";
 
-const SERVER = prodServer;
+const SERVER = debugServer;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

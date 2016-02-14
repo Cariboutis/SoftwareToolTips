@@ -4,6 +4,13 @@ html
         title= title
         link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css')
         link(rel='stylesheet', href='/stylesheets/style.css')
+        link(rel='stylesheet', href='/stylesheets/smoothness/jquery-ui.min.css')
+
+        script(src='http://code.jquery.com/jquery-1.12.0.min.js')
+        script(src='/js/jquery.validate.min.js')
+        script(src='/js/jquery-ui.min.js')
+        script(src='/js/newProductValidation.js')
+        script(src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js")    
 
         meta(name="google-signin-scope", content="profile email")
         meta(name="google-signin-client_id", content="159196631200-d1cf3beikgm0km95rjnvierd952ig5kc.apps.googleusercontent.com")
@@ -26,7 +33,7 @@ html
                                 a(href="#") Contact
                         ul.nav.navbar-nav.navbar-right
                             li
-                                a(href="#") New Posts
+                                a(href="/Product/New") New Posts
 
 
                             if(session && session.isLoggedIn)

@@ -108,3 +108,7 @@ a {
     line-height: 24px;
 
 }
+
+.error {
+    color: #ff1e29;
+}

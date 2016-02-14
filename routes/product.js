@@ -25,23 +25,49 @@ router.get('/', function(req,res,next) {
     res.render('product');
 });
 
-router.get('/new', function(req,res,next) {
-    res.render('newProduct');
+var dateAddLeadingZero = function(n) {
+    return n < 10 ? '0' + n : n;
+};
+
+var today = function() {
+    var d = new Date();
+    var day = dateAddLeadingZero(d.getDate());
+    var month = dateAddLeadingZero(d.getMonth() + 1);
+    var year = d.getFullYear();
+
+    return year + '-' + month + '-' + day;
+};
+
+router.get('/New', function(req,res,next) {
+    if (!req.session.isLoggedIn) {
+        res.redirect('/Login');//, { message : "You need to be logged in to create a new product." });
+    } else {
+        var now = today();
+        res.render('newProduct', { today: now});
+    }
 });
 
 router.post('/new', upload.single('photo'), function (req, res, next) {
 
     // TODO: Error handling and input validation
     // TODO: Handle who is posting
+    // TODO: Allow links to images rather than just uploads
+
+    var error = false;
 
     var productName = req.db.escape(req.body.productName);
-    var logoUrl = req.db.escape('/public/images/' + req.file.filename);
-    var versionNum = req.db.escape(req.body.version);
+    var logoUrl = req.db.escape(req.body.logoUrl);
+    var versionNum = req.db.escape(req.body.versionNum);
     var lastUpdate = req.db.escape(req.body.lastUpdate);
 
-    var insert = "INSERT INTO products (productName, logoUrl, version, lastUpdate, userId) VALUES (" + productName + ',' + logoUrl + ',' + versionNum + ',' + lastUpdate + ',1);';
+    var d = new Date(lastUpdate);
+    lastUpdate = "'" + d.getFullYear() + "-" + dateAddLeadingZero(d.getMonth() + 1) + "-" + dateAddLeadingZero(d.getDate()) + "'";
 
-    var query = req.db.query(insert, function(err, rows) {
+    var insert = "INSERT INTO products (productName, logoUrl, version, lastUpdate, userId) VALUES (" + productName + ',' + logoUrl + ',' + versionNum + ',' + lastUpdate + ',' + req.session.user.userId + ');';
+
+    console.log("Inserting: " + insert);
+
+    var query = req.db.query(insert, function (err, rows) {
         if (err) throw err; // TODO: Handle error gracefully
 
         console.log("Inserted: " + JSON.stringify(rows));

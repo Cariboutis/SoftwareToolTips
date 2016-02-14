@@ -3,19 +3,26 @@
 extends layout
 
 block content
+
     h1 New Product
-    form(name="newProduct", method="post", enctype="multipart/form-data")
+    form(id="newProductForm", class="form-horizontal", role="form", name="newProductForm", method="post")
         .form-group
-            label Name
-            input(type="text", name="productName")
+            label(for="productName", class="control-label col-sm-2") Name
+            .col-sm-10
+                input(type="text", class="form-control", id="productName", name="productName")
         .form-group
-            label Logo
-            input(type="file", name="photo")
+            label(for="logoUrl", class="control-label col-sm-2") Logo
+            .col-sm-10
+                input(type="url", class="form-control", id="logoUrl", name="logoUrl")
         .form-group
-            label Version Number
-            input(type="text", name="version")
+            label(for="versionNum", class="control-label col-sm-2") Version Number
+            .col-sm-10
+                input(type="text", class="form-control", id="versionNum", name="versionNum")
         .form-group
-            label Last Update
-            input(type="date", name="lastUpdate")
+            label(for="lastUpdate", class="control-label col-sm-2") Last Update
+            .col-sm-10
+                input(type="text", class="form-control", id="lastUpdate", name="lastUpdate")
         .form-group
-            input(type="submit", value="Submit", class="btn")
+            div(class="col-sm-offset-2 col-sm-10")
+                input(type="submit", value="Submit", class="btn", id="submit")
+
