@@ -2,40 +2,36 @@ doctype html
 html
     head
         title= title
-        link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css')
-        link(rel='stylesheet', href='/stylesheets/style.css')
+
+        block headStyles
+
+        link(rel='stylesheet', href='/stylesheets/navStyle.css')
         link(rel='stylesheet', href='/stylesheets/smoothness/jquery-ui.min.css')
+        link(rel='stylesheet', href='/stylesheets/newStyle.css')
 
         script(src='http://code.jquery.com/jquery-1.12.0.min.js')
         script(src='/js/jquery.validate.min.js')
         script(src='/js/jquery-ui.min.js')
         script(src='/js/newProductValidation.js')
-        script(src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js")    
+        script(src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js")
 
         meta(name="google-signin-scope", content="profile email")
         meta(name="google-signin-client_id", content="159196631200-d1cf3beikgm0km95rjnvierd952ig5kc.apps.googleusercontent.com")
     body
+
         div(id="wrapper")
-            nav(class="navbar navbar-default navbar-fixed-top")
-                .container
+            div(id="navigation")
+                nav
                     .navbar-header
-                        button(type="button",class="navbar-toggle collapsed", data-toggle="collapse", data-target="#navbar", aria-expanded=false, aria-controls="navbar")
-                            span.sr-only Toggle navigation
-                            span.icon-bar
-                            span.icon-bar
-                            span.icon-bar
                         a.navbar-brand(href="/") Software Tool Tips
-                    #navbar.navbar-collapse.collapse
-                        ul.nav.navbar-nav
-                            li
-                                a(href="/About") About
-                            li
-                                a(href="#") Contact
-                        ul.nav.navbar-nav.navbar-right
+                    ul.topnav
+                        li
+                            a(href="/About") About
+                        li
+                            a(href="#") Contact
+                        ul.topnav.right
                             li
                                 a(href="/Product/New") New Posts
-
-
                             if(session && session.isLoggedIn)
                                 li
                                     a(href="/User/" + session.user.userId + "/" + session.user.username) #{session.user.username}
@@ -46,10 +42,12 @@ html
                                     a(href="/Login") Login
                                 li
                                     a(href="/Login") Sign Up
-            .container
+            .main-body
                 block content
 
-        footer(class="footer")
+        footer(id="footer")
             .container
                 p(class="text-muted") Project for CS290
+
+        block scripts
 

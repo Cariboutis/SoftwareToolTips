@@ -1,11 +1,15 @@
 extends layout
 
+block headStyles
+
+
 block content
-    .jumbotron
+
+    .container
         h1 Software Tool Tips
         p 3rd party software reviews
 
-    .container.main-body
+    .container
         .col-md-6
             h3 New Posts
             .container.col-md-11
@@ -40,7 +44,7 @@ block content
                         button(class="btn tag") TAG
                         button(class="btn tag") TAG
 
-        .col-md-6
+        #popular.col-md-6
             h3 Popular Posts
             .container.col-md-11
                 .post
