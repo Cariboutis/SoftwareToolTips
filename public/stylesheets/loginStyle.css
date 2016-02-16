@@ -1,0 +1,36 @@
+#login-form {
+    background: #f5f5f5;
+}
+
+#customBtn {
+    display: inline-block;
+    background: #4285f4;
+    color: white;
+    width: 190px;
+    border-radius: 5px;
+    white-space: nowrap;
+    margin: 1.5em auto 3em auto;
+}
+
+span.label {
+    font-weight: bold;
+}
+span.icon {
+    background: url('/images/g-normal.png') transparent 5px 50% no-repeat;
+    display: inline-block;
+    vertical-align: middle;
+    width: 42px;
+    height: 42px;
+    border-right: #2265d4 1px solid;
+}
+span.buttonText {
+    display: inline-block;
+    vertical-align: middle;
+    padding-left: 42px;
+    padding-right: 42px;
+    font-size: 14px;
+    font-weight: bold;
+    /* Use the Roboto font that is loaded in the <head> */
+    font-family: 'Roboto', sans-serif;
+}
+

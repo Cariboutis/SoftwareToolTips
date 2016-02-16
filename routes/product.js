@@ -1,6 +1,4 @@
-/**
- * Created by Nathan on 2/6/2016.
- */
+
 var multer = require('multer');
 var crypto = require('crypto');
 var express = require('express');

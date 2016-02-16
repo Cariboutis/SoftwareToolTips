@@ -17,6 +17,8 @@
     "express-session": "^1.7.6",
     "ejs": "^1.0.0",
     "multer": "~1.1.0",
-    "crypto": "~0.0.3"
+    "crypto": "~0.0.3",
+    "passport-google-oauth2": "~0.1.6",
+    "passport": "~0.3.2"
   }
 }

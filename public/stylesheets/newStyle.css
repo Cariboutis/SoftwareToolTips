@@ -66,3 +66,8 @@ h4 {
 #gConnect {
     margin-top: 1em;
 }
+
+.center {
+    margin: auto;
+    text-align: center;
+}
