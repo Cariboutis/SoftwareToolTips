@@ -7,13 +7,12 @@ html
 
         link(rel='stylesheet', href='/stylesheets/navStyle.css')
         link(rel='stylesheet', href='/stylesheets/smoothness/jquery-ui.min.css')
-        link(rel='stylesheet', href='/stylesheets/newStyle.css')
+        link(rel='stylesheet', href='/stylesheets/style.css')
+
 
         script(src='http://code.jquery.com/jquery-1.12.0.min.js')
-        script(src='/js/jquery.validate.min.js')
-        script(src='/js/jquery-ui.min.js')
-        script(src='/js/newProductValidation.js')
-        script(src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js")
+        block headScripts
+
 
         meta(name="google-signin-scope", content="profile email")
         meta(name="google-signin-client_id", content="159196631200-d1cf3beikgm0km95rjnvierd952ig5kc.apps.googleusercontent.com")
@@ -49,5 +48,5 @@ html
             .container
                 p(class="text-muted") Project for CS290
 
-        block scripts
+        block bottomScripts
 
