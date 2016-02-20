@@ -87,7 +87,7 @@ router.get('/:pname', function(req,res,next) {
             res.redirect('/About');
         } else {
             var product = pRows[0];
-            var selectCQ = "SELECT * FROM comments WHERE productId = \'" + product.productId + "\'";
+            var selectCQ = "SELECT * FROM comments INNER JOIN users ON comments.userId=users.userId WHERE productId = \'" + product.productId + "\'";
             var commentsQuery = req.db.query(selectCQ , function(err, cRows) {
                 var Pcomments = cRows;
                 res.render('product', { productName : product.productName, logoUrl: product.logoUrl, version: product.version, lastUpdate: product.lastUpdate, comments: Pcomments});
