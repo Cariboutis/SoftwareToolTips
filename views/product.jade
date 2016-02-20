@@ -17,3 +17,10 @@ block content
                 td= version
             tr
                 td= lastUpdate
+    table
+        tbody
+            each comment in comments
+                tr
+                    td=comment.userId
+                    td=comment.commentBody
+                    td=comment.commentTime
