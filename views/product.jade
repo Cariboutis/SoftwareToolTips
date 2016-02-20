@@ -4,6 +4,7 @@
 extends layout
 
 block headStyles
+    link(rel='stylesheet', href='/stylesheets/productStyle.css')
 
 block content
     table
@@ -17,10 +18,12 @@ block content
                 td= version
             tr
                 td= lastUpdate
-    table
-        tbody
-            each comment in comments
-                tr
-                    td=comment.userId
-                    td=comment.commentBody
-                    td=comment.commentTime
+    .container
+        .col-md-100
+            h3 Comments
+            .container.col-md-100
+                each comment in comments
+                    .post
+                        p.comUser=comment.userId
+                        p.comBody=comment.commentBody
+                        p.comDate=comment.commentTime

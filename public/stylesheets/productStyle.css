@@ -1,0 +1,24 @@
+#popular {
+    float:right;
+}
+
+.post {
+    width: 80%;
+    margin: .5em auto .5em auto;
+    padding: 1em;
+    background-color:#85B585;
+    border-radius: .25em;
+    line-height: 20%;
+}
+
+p.comUser{
+    font-size: .5em
+}
+
+p.comBody{
+    font-size: 1em
+}
+
+p.comDate{
+    font-size: .5em
+}
