@@ -27,9 +27,17 @@ $().ready(function() {
             },
             lastUpdate: {
                 required: true,
-                validDate: true,
-                dateBefore: true,
-                afterTimestamp: true
+                dateRange: {
+                    dateBefore: function() {
+                        var d = new Date();
+                        var day = dateAddLeadingZero(d.getDate());
+                        var month = dateAddLeadingZero(d.getMonth() + 1);
+                        var year = d.getFullYear();
+
+                        return year + '-' + month + '-' + day;
+                    },
+                    dateAfter: "1970-01-01"
+                }
             }
         },
         messages: {
@@ -42,11 +50,12 @@ $().ready(function() {
                 versionNum: "Please enter a valid version number. # - #.# - #.#.#"
             },
             lastUpdate: {
-                format: "The date entered is invalid.",
-                validDate: "Please enter a valid date.",
-                dateBefore: "Must be before today",
-                dateAfter: "Must be after Jan 1, 1970"
+                required: "Please enter a valid date",
+                dateRange: "Please enter a date between Jan 1, 1970 and today"
             }
+        },
+        submitHandler: function(form) {
+            alert("submitted");
         }
     });
 });
@@ -60,23 +69,18 @@ $.validator.addMethod("versionNum", function(value, element) {
     return this.optional( element ) || value.match( new RegExp( "^[0-9]*\.?[0-9]*\.?[0-9]+$" ));
 }, $.validator.format( "Please enter a valid version number"));
 
-$.validator.addMethod('validDate', function (value, element) {
-    return this.optional(element) || /^(0?[1-9]|1[012])[ /](0?[1-9]|[12][0-9]|3[01])[ /][0-9]{4}$/.test(value);
-}, 'Please provide a date in the mm/dd/yyyy format');
+$.validator.addMethod("dateRange", function(value, element, arg) {
 
-$.validator.addMethod('beforeToday', function (value, element, params) {
+    var dateBefore, dateAfter, dateEntered;
 
-    var today = new Date();
-    var date = new Date(value);
+    if (arg.dateBefore) dateBefore = Date.parse(arg.dateBefore);
+    else dateBefore = new Date();
 
-    return this.optional(element) || !(today < date);
-}, 'Must be before today');
+    if (arg.dateAfter) dateAfter = Date.parse(arg.dateAfter);
+    else dateAfter = Date.parse("1970-01-01");
 
-$.validator.addMethod('afterTimestamp', function (value, element, params) {
+    dateEntered = Date.parse(value);
 
-    var start = new Date("01/01/1970");
-    var date = new Date(value);
+    return this.optional(element) || ( (dateBefore >= dateEntered) && (dateAfter <= dateEntered) )
 
-    return this.optional(element) || !(start > date);
-
-}, 'Must be after corresponding start date');
+}, $.validator.format("Please specify a date between Jan 1, 1970 and today."));
