@@ -48,8 +48,6 @@ router.get('/auth/google/callback',
             }
 
         });
-
-
     }
 );
 

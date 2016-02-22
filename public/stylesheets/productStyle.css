@@ -22,3 +22,76 @@ p.comBody{
 p.comDate{
     font-size: .6em
 }
+
+#ratings {
+    width: 20%;
+    float: left;
+}
+
+.bar-back {
+    width: 90%;
+    float: left;
+    background-color: #e0e0e0;
+}
+
+.bar {
+    height: 2em;
+}
+
+.rating {
+    float: left;
+    width: 100%;
+    padding-bottom: 1.5em;
+    border-bottom: 1px solid #c7c7c7;
+}
+
+.rate {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+#overall{
+    background-color: #308dba;
+}
+
+#learnability {
+    background-color: #EDBC40;
+}
+
+#compatibility {
+    background-color: #ED6140;
+}
+
+#documentation {
+    background-color: #7FD339;
+}
+
+#easeOfUse {
+    background-color: #9A2A9A;
+}
+
+#description img{
+    height: 20em;
+    width: auto;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+#description img[src='']{
+    display: none;
+}
+
+#description h1 {
+    text-align: center;
+}
+#description p {
+    font-size: 100%;
+    display: block;
+    word-wrap: break-word;
+    text-align: left;
+}
+
+#description {
+    width:75%;
+    float:right;
+}

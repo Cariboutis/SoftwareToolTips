@@ -23,7 +23,7 @@ var product         = require('./routes/product');
 //Server constants
 const debugServer = "localhost:3000";
 const prodServer = "ec2-52-26-176-89.us-west-2.compute.amazonaws.com:3000";
-const SERVER = prodServer;
+const SERVER = debugServer;
 const GOOGLE_CLIENT_ID = "159196631200-d1cf3beikgm0km95rjnvierd952ig5kc.apps.googleusercontent.com";
 const GOOGLE_CLIENT_SECRET = "R_mG-IVJm5zYdENS42Hld4y2";
 
@@ -105,7 +105,7 @@ app.use(function(req, res, next) {
 });
 
 // error handlers
-
+/*
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
@@ -116,13 +116,14 @@ if (app.get('env') === 'development') {
             error: err
         });
     });
-}
+}*/
 
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
+        status: err.status,
         message: err.message,
         error: {}
     });

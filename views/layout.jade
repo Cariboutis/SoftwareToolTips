@@ -3,16 +3,13 @@ html
     head
         title= title
 
-        block headStyles
-
         link(rel='stylesheet', href='/stylesheets/navStyle.css')
         link(rel='stylesheet', href='/stylesheets/smoothness/jquery-ui.min.css')
         link(rel='stylesheet', href='/stylesheets/style.css')
-
+        block headStyles
 
         script(src='http://code.jquery.com/jquery-1.12.0.min.js')
         block headScripts
-
 
         meta(name="google-signin-scope", content="profile email")
         meta(name="google-signin-client_id", content="159196631200-d1cf3beikgm0km95rjnvierd952ig5kc.apps.googleusercontent.com")
@@ -30,7 +27,9 @@ html
                             a(href="#") Contact
                         ul.topnav.right
                             li
-                                a(href="/Product/New") New Posts
+                                a(href="/Search") Posts
+                            li
+                                a(href="/Product/New") New Post
                             if(session && session.isLoggedIn)
                                 li
                                     a(href="/User/" + session.user.userId + "/" + session.user.username) #{session.user.username}
@@ -38,15 +37,11 @@ html
                                     a(href="/Logout") Log Out
                             else
                                 li
-                                    a(href="/Login") Login
+                                    a(href="/auth/google") Login
                                 li
-                                    a(href="/Login") Sign Up
+                                    a(href="/auth/google") Sign Up
             .main-body
                 block content
-
-        footer(id="footer")
-            .container
-                p(class="text-muted") Project for CS290
 
         block bottomScripts
 

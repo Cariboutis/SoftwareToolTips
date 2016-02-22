@@ -1,0 +1,247 @@
+
+extends layout
+
+block headStyles
+    link(rel='stylesheet', href='/stylesheets/statsStyle.css')
+
+block headScripts
+    script(src="/js/d3.v3.min.js")
+    script(src="/js/d3.tip.js")
+
+block content
+    h1 #{productName} Statistics
+    a(href="/product/#{productName}/#{selectedVersion}")
+        button.btn Back
+    h2 Versions
+        select(name="version", onchange="changeVersion()", id="version")
+            option(value="all") All
+            each v in versions
+                if(v === selectedVersion)
+                    option(value='#{v}', selected) #{v}
+                else
+                    option(value='#{v}') #{v}
+    #topChart
+        .chart#overallChart
+            h2 Overall
+    .chart#learnChart
+        h2 Learnability
+    .chart#useChart
+        h2 Ease of Use
+    .chart#compatChart
+        h2 Compatability
+    .chart#docChart
+        h2 Documentation
+
+block bottomScripts
+    script.
+        var productName = '#{productName}';
+        var data;
+        $.ajax({
+            type: "GET",
+            url: "http://localhost:3000/product/" +  productName + "/statData",
+            cache:false,
+            success: function(result) {
+                data = result;
+
+                var v = document.getElementById("version");
+                var vers = v.options[v.selectedIndex].text;
+                var vData;
+                if (vers === "All") {
+                    vData = data;
+                } else {
+                    vData = data.filter(function (d) {
+                        return (d[6] === vers);
+                    });
+                }
+
+                setupConsts(vData);
+                setupChart(vData,1,"#overallChart",500,300);
+                setupChart(vData,2,"#learnChart",500,300);
+                setupChart(vData,3,"#useChart",500,300);
+                setupChart(vData,4,"#compatChart",500,300);
+                setupChart(vData,5,"#docChart",500,300);
+            },
+            error: function(res,p1,p2) {
+                alert("error:"+res);
+            }
+        });
+
+        var maxY = 0;
+
+        var tip = d3.tip()
+            .attr('class', 'd3-tip')
+            .offset([-10,0])
+            .html(function(d) {
+                return "<strong>Reviews: </strong><span style='color:#b82626'>" + d.length +"</span>";
+            });
+
+        function setupConsts(rateData){
+
+            var i;
+            for(i = 1; i <= 5; i++){
+                var values = rateData.map(function (r) {
+                    return r[i];
+                });
+                var data = d3.layout.histogram()
+                        .bins(11) //x.ticks(10))
+                        (values);
+                maxY = Math.max(maxY,d3.max(data, function (d, i) {
+                    return d.length;
+                }));
+            }
+        }
+
+        function setupChart(rateData,p,divId,w,h){
+
+            // Generate a Bates distribution of 10 random variables.
+            //var values = d3.range(1000).map(d3.random.bates(10));
+            var values = rateData.map(function(r) { return r[p];});
+
+            var data = d3.layout.histogram()
+                    .bins(11) //x.ticks(10))
+                    (values);
+
+            var margin = {top: 20, right: 20, bottom: 30, left: 40},
+                    width = w - margin.left - margin.right,
+                    height = h - margin.top - margin.bottom;
+
+            var x = d3.scale.ordinal()
+                    .rangeRoundBands([0, width], .1);
+
+            var y = d3.scale.linear()
+                    .range([height, 0]);
+
+            var xAxis = d3.svg.axis()
+                    .scale(x)
+                    .orient("bottom");
+
+            var yAxis = d3.svg.axis()
+                    .scale(y)
+                    .orient("left")
+                    .ticks(5);
+
+            var svg = d3.select(divId).append("svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .attr("class", "rateChart")
+                    .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            svg.call(tip);
+
+            x.domain([0,1,2,3,4,5,6,7,8,9,10]);
+            y.domain([0, maxY]);
+
+            svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(xAxis)
+                    .append("text")
+                    .attr("y", 9)
+                    .attr("x", 5)
+                    .attr("dy", ".71em")
+                    .style("text-anchor","end")
+                    .text("Rating");
+
+            svg.append("g")
+                    .attr("class", "y axis")
+                    .call(yAxis)
+                    .append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 6)
+                    .attr("dy", ".71em")
+                    .style("text-anchor", "end")
+                    .text("Reviews");
+
+            var bars = svg.selectAll(".bar")
+                    .data(data);
+
+
+            bars.enter()
+                    .append("rect")
+                    .attr("class", "bar")
+                    .on('mouseover', tip.show)
+                    .on('mouseout', tip.hide);
+
+            bars.transition().duration(500)
+                    .attr("x", function (d,i) {
+                        return x(i);
+                    })
+                    .attr("width", x.rangeBand())
+                    .attr("y", function (d) {
+                        return y(d.length);
+                    })
+                    .attr("height", function (d) {
+                        return height - y(d.length);
+                    });
+
+        }
+
+        function updateChart(rateData,p,divId,w,h){
+
+            var values = rateData.map(function (r) {
+                return r[p];
+            });
+
+            var data = d3.layout.histogram()
+                    .bins(11) //x.ticks(10))
+                    (values);
+
+            var margin = {top: 20, right: 20, bottom: 30, left: 40},
+                    width = w - margin.left - margin.right,
+                    height = h - margin.top - margin.bottom;
+
+            var x = d3.scale.ordinal()
+                    .rangeRoundBands([0, width], .1);
+
+            var y = d3.scale.linear()
+                    .range([height, 0]);
+
+            x.domain([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+            y.domain([0, maxY]);
+
+            var yAxis = d3.svg.axis()
+                    .scale(y)
+                    .orient("left")
+                    .ticks(5);
+
+            var svg = d3.select(divId).select(".rateChart");
+
+            svg.select(".y")
+                    .transition().duration(500)
+                    .call(yAxis)
+
+            var bars = svg.selectAll(".bar").data(data);
+
+            bars.transition().duration(500)
+                .attr("x", function (d, i) {
+                    return x(i);
+                })
+                .attr("y", function (d) {
+                    return y(d.length);
+                })
+                .attr("height", function (d) {
+                    return height - y(d.length);
+                });
+
+        }
+
+        function changeVersion(){
+            var v = document.getElementById("version");
+            var vers = v.options[v.selectedIndex].text;
+            var vData;
+            if(vers === "All"){
+                vData = data;
+            } else {
+                vData = data.filter(function (d) {
+                    return (d[6] === vers);
+                });
+            }
+            maxY = 0;
+            setupConsts(vData);
+            updateChart(vData,1,"#overallChart",500,300);
+            updateChart(vData, 2, "#learnChart", 500, 300);
+            updateChart(vData, 3, "#useChart", 500, 300);
+            updateChart(vData, 4, "#compatChart", 500, 300);
+            updateChart(vData, 5, "#docChart", 500, 300);
+        }

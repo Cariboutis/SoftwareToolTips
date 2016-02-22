@@ -1,29 +1,67 @@
-//
-   Created by Daniel on 2/2/2016.
-
 extends layout
 
 block headStyles
     link(rel='stylesheet', href='/stylesheets/productStyle.css')
 
 block content
-    table
-        thead
-            tr
-            th= productName
-        tbody
-            tr
-                td= logoUrl
-            tr
-                td= version
-            tr
-                td= lastUpdate
-    .container
-        .col-md-100
-            h3 Comments
-            .container.col-md-100
-                each comment in comments
-                    .post
-                        p.comUser=comment.username
-                        p.comBody=comment.commentBody
-                        p.comDate=comment.commentTime
+    #ratings
+        a(href="/product/#{product.productName}/stats/?version=#{product.version}")
+            button.btn.submit-btn Statistics
+        .rating
+            h3 Overall
+            if(product.overallRate)
+                h2.rate #{product.overallRate.toFixed(1)}/10
+                .bar.bar-back
+                    .bar#overall(style="width:#{(product.overallRate / 10.0) * 100}%")
+            else
+                h2 No Rating
+        .rating
+            h3 Learnability
+            if(product.learnability)
+                h2.rate #{product.learnability.toFixed(1)}/10
+                .bar.bar-back
+                    .bar#learnability(style="width:#{(product.learnability / 10.0) * 100}%")
+            else
+                h2 No Rating
+        .rating
+            h3 Ease of Use
+            if(product.easeOfUse)
+                h2.rate #{product.easeOfUse.toFixed(1)}/10
+                .bar.bar-back
+                    .bar#easeOfUse(style="width:#{(product.easeOfUse / 10.0) * 100}%")
+            else
+                h2 No Rating
+        .rating
+            h3 Compatibility
+            if(product.compatibility)
+                h2.rate #{product.compatibility.toFixed(1)}/10
+                .bar.bar-back
+                    .bar#compatibility(style="width:#{(product.compatibility / 10.0) * 100}%")
+            else
+                h2 No Rating
+        .rating
+            h3 Documentation
+            if(product.documentation)
+                h2.rate #{product.documentation.toFixed(1)}/10
+                .bar.bar-back
+                    .bar#documentation(style="width:#{(product.documentation / 10.0) * 100}%")
+            else
+                h2 No Rating
+        #tags
+            h1 Tags
+    #description
+        h1 #{product.productName} - #{product.version}
+        img#logo(src="#{product.logoUrl}", onerror="this.style.display='none'")
+        div
+            h2 Description
+            p= product.description
+
+        .container
+            .col-md-100
+                h3 Comments
+                .container.col-md-100
+                    each comment in comments
+                        .post
+                            p.comUser=comment.username
+                            p.comBody=comment.commentBody
+                            p.comDate=comment.commentTime
