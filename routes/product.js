@@ -118,7 +118,8 @@ router.get('/:pname/stats', function(req,res,next) {
             res.render('stats', {
                 productName:req.params.pname,
                 versions:versions,
-                selectedVersion:version
+                selectedVersion:version,
+                server: req.server
             });
         }
     });
