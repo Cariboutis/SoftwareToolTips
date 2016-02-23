@@ -26,7 +26,7 @@ router.get('/search', function(req,res,next) {
     var pageSize = 3;
     console.log(page);
 
-    var query = "SELECT productName as n, version as v, overallRate as o, uploadDate as d FROM PRODUCTS";
+    var query = "SELECT productName as n, version as v, overallRate as o, uploadDate as d FROM products";
 
     if(name != "%%") {
         query += " WHERE productName LIKE " + name;
