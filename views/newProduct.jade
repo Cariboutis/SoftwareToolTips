@@ -36,6 +36,11 @@ block content
                 .form-cell-input
                     input(type="text", id="lastUpdate", name="lastUpdate")
             .form-row
+                .form-cell-label
+                    label(for="description") Description
+                .form-cell-input
+                    textarea(form="newProductForm", name="description", id="description", rows="5")
+            .form-row
                 .form-cell
                     input(type="submit", value="Submit", class="submit-btn", id="submit")
 

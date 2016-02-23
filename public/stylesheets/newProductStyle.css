@@ -15,9 +15,14 @@
 .form-cell-label {
     width: 20%;
     padding: 3px;
+    vertical-align: top;
 }
 
 input {
+    width: 100%;
+}
+
+textarea{
     width: 100%;
 }
 

@@ -1,24 +1,8 @@
 var url = require('url');
-var multer = require('multer');
-var crypto = require('crypto');
 var express = require('express');
 
 
 var router = express.Router();
-var storage = multer.diskStorage({
-    destination: function(req,file,cb){
-        cb(null, './public/images/')
-    },
-    filename: function(req,file,cb) {
-        crypto.pseudoRandomBytes(16, function(err, raw) {
-            if (err) return cb(err);
-
-            cb(null, raw.toString('hex') + Date.now() + '.png');
-        });
-    }
-});
-
-var upload = multer({ storage: storage });
 
 router.get('/', function(req,res,next) {
     res.render('product');
@@ -46,30 +30,28 @@ router.get('/New', function(req,res,next) {
     }
 });
 
-router.post('/new', upload.single('photo'), function (req, res, next) {
+router.post('/new', function (req, res, next) {
 
-    // TODO: Error handling and input validation
-    // TODO: Handle who is posting
-    // TODO: Allow links to images rather than just uploads
-
-    var error = false;
+    // TODO: Allow uploads rather than just links
 
     var productName = req.db.escape(req.body.productName);
     var logoUrl = req.db.escape(req.body.logoUrl);
     var versionNum = req.db.escape(req.body.versionNum);
     var lastUpdate = req.db.escape(req.body.lastUpdate);
+    var description = req.db.escape(req.body.description);
+    var now = req.db.escape(today());
 
     var d = new Date(lastUpdate);
     lastUpdate = "'" + d.getFullYear() + "-" + dateAddLeadingZero(d.getMonth() + 1) + "-" + dateAddLeadingZero(d.getDate()) + "'";
 
-    var insert = "INSERT INTO products (productName, logoUrl, version, lastUpdate, userId) VALUES (" + productName + ',' + logoUrl + ',' + versionNum + ',' + lastUpdate + ',' + req.session.user.userId + ');';
+
+    var insert = "INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, description, uploadDate) VALUES ("
+        + productName + ',' + logoUrl + ',' + versionNum + ',' + lastUpdate + ',' + req.session.user.userId + ',' + description + ',' + now + ');';
 
     console.log("Inserting: " + insert);
 
     var query = req.db.query(insert, function (err, rows) {
         if (err) throw err; // TODO: Handle error gracefully
-
-        console.log("Inserted: " + JSON.stringify(rows));
     });
 
     res.redirect('/');

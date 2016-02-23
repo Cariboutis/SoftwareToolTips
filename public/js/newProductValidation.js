@@ -27,7 +27,6 @@ $().ready(function() {
                 versionNum: true
             },
             lastUpdate: {
-                required: true,
                 dateRange: {
                     dateBefore: function() {
                         var d = new Date();
@@ -51,12 +50,8 @@ $().ready(function() {
                 versionNum: "Please enter a valid version number. # - #.# - #.#.#"
             },
             lastUpdate: {
-                required: "Please enter a valid date",
                 dateRange: "Please enter a date between Jan 1, 1970 and today"
             }
-        },
-        submitHandler: function(form) {
-            alert("submitted");
         }
     });
 });
