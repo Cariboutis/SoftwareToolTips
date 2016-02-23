@@ -2,28 +2,40 @@
 
 extends layout
 
+block headStyles
+    link(rel='stylesheet', href='/stylesheets/newProductStyle.css')
+
 block headScripts
     script(src='/js/jquery.validate.min.js')
     script(src='/js/jquery-ui.min.js')
     script(src='/js/newProductValidation.js')
-    script(src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js")
 
 block content
 
     h1 New Product
-    form(id="newProductForm", class="form-horizontal", role="form", name="newProductForm", method="post")
-        .form-group
-            label(for="productName", class="control-label col-sm-2") Name
-            input(type="text", class="form-control", id="productName", name="productName")
-        .form-group
-            label(for="logoUrl", class="control-label col-sm-2") Logo
-            input(type="url", class="form-control", id="logoUrl", name="logoUrl")
-        .form-group
-            label(for="versionNum", class="control-label col-sm-2") Version Number
-            input(type="text", class="form-control", id="versionNum", name="versionNum")
-        .form-group
-            label(for="lastUpdate", class="control-label col-sm-2") Last Update
-            input(type="text", class="form-control", id="lastUpdate", name="lastUpdate")
-        .form-group
-            input(type="submit", value="Submit", class="btn", id="submit")
+    form(id="newProductForm", name="newProductForm", method="post")
+        .form-table
+            .form-row
+                .form-cell-label
+                    label(for="productName") Name
+                .form-cell-input
+                    input(type="text", id="productName", name="productName")
+            .form-row
+                .form-cell-label
+                    label(for="logoUrl") Logo
+                .form-cell-input
+                    input(type="url", id="logoUrl", name="logoUrl")
+            .form-row
+                .form-cell-label
+                    label(for="versionNum") Version Number
+                .form-cell-input
+                    input(type="text", id="versionNum", name="versionNum")
+            .form-row
+                .form-cell-label
+                    label(for="lastUpdate") Last Update
+                .form-cell-input
+                    input(type="text", id="lastUpdate", name="lastUpdate")
+            .form-row
+                .form-cell
+                    input(type="submit", value="Submit", class="submit-btn", id="submit")
 

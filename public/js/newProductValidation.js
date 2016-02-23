@@ -12,6 +12,7 @@ $(function () {
 
 $().ready(function() {
     $("#newProductForm").validate({
+        errorElement: 'div',
         rules: {
             productName: {
                 required: true,

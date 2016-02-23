@@ -1,0 +1,28 @@
+.form-table {
+    display: table;
+    width: 100%;
+}
+
+.form-row {
+    display: table-row;
+}
+
+.form-cell-label, .form-cell-input {
+    display: table-cell;
+    padding-bottom: 5px;
+}
+
+.form-cell-label {
+    width: 20%;
+    padding: 3px;
+}
+
+input {
+    width: 100%;
+}
+
+div.error {
+    display: inline-block;
+    color: #cd0a0a;
+    padding-top: 3px;
+}
