@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS comments,products,users;
+DROP TABLE IF EXISTS comments,products,users,tags,productTags;
 
 CREATE TABLE users
 (
@@ -62,6 +62,48 @@ CREATE TABLE comments
 INSERT INTO comments (commentBody, commentTime, productId, userId) VALUES ('FIRST','2015-10-01 10:09:30',1,1);
 INSERT INTO comments (commentBody, commentTime, productId, userId) VALUES ('First!','2015-10-01 10:09:31',1,4);
 INSERT INTO comments (commentBody, commentTime, productId, userId) VALUES ('Too slow professor','2015-10-01 10:09:50',1,1);
+
+CREATE TABLE tags
+(
+    tagId int NOT NULL AUTO_INCREMENT,
+    tag varchar(25) NOT NULL,
+    PRIMARY KEY (tagId)
+);
+INSERT INTO tags (tag) VALUES ('Web Server');
+INSERT INTO tags (tag) VALUES ('JavaScript');
+INSERT INTO tags (tag) VALUES ('Java');
+INSERT INTO tags (tag) VALUES ('C');
+INSERT INTO tags (tag) VALUES ('PHP');
+INSERT INTO tags (tag) VALUES ('Web Framework');
+INSERT INTO tags (tag) VALUES ('JavaScript Framework');
+INSERT INTO tags (tag) VALUES ('Windows');
+INSERT INTO tags (tag) VALUES ('Linux');
+INSERT INTO tags (tag) VALUES ('OSX');
+INSERT INTO tags (tag) VALUES ('Android');
+INSERT INTO tags (tag) VALUES ('iOS');
+INSERT INTO tags (tag) VALUES ('Database');
+INSERT INTO tags (tag) VALUES ('Operating System');
+INSERT INTO tags (tag) VALUES ('Library');
+INSERT INTO tags (tag) VALUES ('Framework');
+INSERT INTO tags (tag) VALUES ('Python');
+INSERT INTO tags (tag) VALUES ('Cryptography');
+INSERT INTO tags (tag) VALUES ('Security');
+
+CREATE TABLE productTags
+(
+    productId int NOT NULL,
+    tagId int NOT NULL,
+    PRIMARY KEY (productId, tagId)
+);
+INSERT INTO productTags (productId, tagId) VALUES (1,1);
+INSERT INTO productTags (productId, tagId) VALUES (1,5);
+INSERT INTO productTags (productId, tagId) VALUES (1,6);
+INSERT INTO productTags (productId, tagId) VALUES (2,1);
+INSERT INTO productTags (productId, tagId) VALUES (2,5);
+INSERT INTO productTags (productId, tagId) VALUES (2,6);
+INSERT INTO productTags (productId, tagId) VALUES (3,1);
+INSERT INTO productTags (productId, tagId) VALUES (3,5);
+INSERT INTO productTags (productId, tagId) VALUES (3,6);
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS usp_insertTestData$$
