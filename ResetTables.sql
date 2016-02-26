@@ -93,7 +93,9 @@ CREATE TABLE productTags
 (
     productId int NOT NULL,
     tagId int NOT NULL,
-    PRIMARY KEY (productId, tagId)
+    PRIMARY KEY (productId, tagId),
+    FOREIGN KEY (productId) REFERENCES products(productId),
+    FOREIGN KEY (tagId) REFERENCES tags(tagId)
 );
 INSERT INTO productTags (productId, tagId) VALUES (1,1);
 INSERT INTO productTags (productId, tagId) VALUES (1,5);
