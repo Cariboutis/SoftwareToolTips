@@ -79,6 +79,7 @@ router.get('/:pname', function(req,res,next) {
         }
     });
     */
+    next();
 });
 
 router.get('/:pname/stats', function(req,res,next) {

@@ -1,0 +1,53 @@
+td {
+    padding: 8px;
+    line-height: 1.42857143;
+    vertical-align: top;
+    border-top: 1px solid #ddd;
+}
+
+thead {
+    display: table-header-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+
+tbody {
+    display: table-row-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+
+tr {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+}
+
+.tag {
+    border: 1px solid #e8e8e8;
+    background-color: #e3e3e3;
+    border-radius: 0.25em;
+    margin: auto 0.25em auto 0.25em;
+    padding: 0.1em 0.2em 0.1em 0.2em;
+    float:left;
+}
+
+.row {
+    overflow: hidden;
+    padding:10px;
+    margin-top:10px;
+    height:auto;
+    background-color:#f9f9f9;
+    cursor: hand;
+}
+
+.clickable-row:hover {
+    cursor: hand;
+    background-color: #bababa;
+
+}
+.row-item {
+    float:left;
+    cursor: hand;
+    margin: auto 1em auto 1em;
+}

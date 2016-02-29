@@ -3,9 +3,24 @@
 
 extends layout
 
+block headStyles
+    link(rel='stylesheet', href='/stylesheets/searchStyle.css')
+
 block content
     h1 Search
-    ul
-        each post in posts
-            li
-                a(href="/product/" + "#{post.n}" +"/"+ "#{post.v}" )=  post.n + " - " + post.v
+    each post in posts
+        .row
+            .row-item.row-name
+                a(href="/product/" + "#{post.n}")= post.n
+            .row-item.row-version
+                a(href="/product/" + "#{post.n}" + "/" + "#{post.v}")=post.v
+            .row-item.row-rating= post.o
+            .row-item.row-date= post.d
+            .row-item.row-tags
+                    each tag in post.tags
+                        a.tag(href="/search?tags=#{tag}")
+                            | #{tag}
+
+    if page > 1
+        a.btn-default(href="/search?page=#{page-1}") Back
+    a.btn-default(href="/search?page=#{page+1}") Next

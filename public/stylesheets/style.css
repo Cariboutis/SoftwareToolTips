@@ -19,7 +19,6 @@ html {
     clear: left;
 }
 
-
 div.col-md-6 {
     width: 49.5%;
     float:left;
@@ -125,4 +124,5 @@ p {
 
 #wrapper {
     overflow: auto;
+    clear: both;
 }
