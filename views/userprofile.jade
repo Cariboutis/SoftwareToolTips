@@ -1,41 +1,25 @@
 extends layout
 
+block headStyles
+  link(rel='stylesheet', href='/stylesheets/userprofile.css')
+
 block content
 
     .container.col-md-12.main-body
         .col-md-6
 
-            h3 USERNAME
+            h3 #{user.username}
             .container.image.col-md-4
-                        p PROILE PHOTO HERE
-            p Age:
-            p Occupation:
+                        img.profile-image(src="#{user.profileImageUrl}")
             p Bio:
-            p Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.
+            p #{user.bio}
 
 
         .col-md-6
             h3 Reviews
             .container.col-md-11
+              each comment in comments
                 .post
-                    h4 Title
-                    p Lorem exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.
-                    .container.tags
-                        button(class="btn tag") TAG
-                        button(class="btn tag") TAG
-
-
-                .post
-                    h4 Title
-                    p Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.
-                    .container.tags
-                        button(class="btn tag") TAG
-                        button(class="btn tag") TAG
-                        button(class="btn tag") TAG
-
-                .post
-                    h4 Title
-                    p Lorem exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.
-                    .container.tags
-                        button(class="btn tag") TAG
-                        button(class="btn tag") TAG
+                    p Overall Rating: #{comment.overallRate}
+                    p #{comment.commentBody}
+                    br
