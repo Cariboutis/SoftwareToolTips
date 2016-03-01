@@ -38,7 +38,7 @@ block bottomScripts
         var data;
         $.ajax({
             type: "GET",
-            url: "http://#{server}/product/" +  productName + "/statData",
+            url: "/product/" +  productName + "/statData",
             cache:false,
             success: function(result) {
                 data = result;

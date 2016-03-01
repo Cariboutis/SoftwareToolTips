@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS comments,products,users,tags,productTags;
+DROP TABLE IF EXISTS comments,productTags,products,users,tags;
 
 CREATE TABLE users
 (

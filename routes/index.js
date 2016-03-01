@@ -31,24 +31,35 @@ router.get('/about', function(req,res) {
     res.render('about');
 });
 
-router.get('/search', function(req,res,next) {
-    var parts = url.parse(req.url, true);
-    var queryStr = parts.query;
+router.post('/products',function(req,res,next) {
+    //var parts = url.parse(req.url, true);
+    //var queryStr = parts.query;
 
-    var p = parseInt(queryStr.page);
+    var p = parseInt(req.body.page);
     var page = isNaN(p)? 1 : p; // isNaN(undefined) == true
     var name = undefined;
-    if(queryStr.name) {
-        name = req.db.escape('%' + (queryStr.name || "") + '%');
+    if(req.body.name) {
+        name = req.db.escape('%' + (req.body.name || "") + '%');
     }
     var tags = undefined;
-    if(queryStr.tags) {
-        tags = queryStr.tags.split(",");
-        tags = tags.map(function(v) {
-           return req.db.escape( '%' + v + '%');
-        });
+    if(req.body.tags) {
+        try {
+            if(Array.isArray(req.body.tags)) {
+                tags = req.body.tags.map(function (v) {
+                    return req.db.escape('%' + v + '%');
+                });
+            }
+        } catch(e){
+            console.log(e);
+        }
     }
-    var pageSize = 4;
+    var pageSize = 25;
+    if(req.body.limit){
+        if(!isNaN(req.body.limit)){
+            pageSize = parseInt(req.body.limit);
+        }
+    }
+
     console.log(page);
 
     var query = "SELECT productName as n, version as v, overallRate as o, lastUpdate as d, GROUP_CONCAT(t.tag) as tags " +
@@ -98,9 +109,13 @@ router.get('/search', function(req,res,next) {
                 v.tags = [];
             return v;
         });
+        res.json({posts:rows, page:page, name:req.body.name, limit:pageSize});
 
-        res.render('search', {posts:rows, page:page, name:queryStr.name, pageSize:pageSize});
     });
+});
+
+router.get('/search', function(req,res,next) {
+    res.render('search', {posts:[]});
 });
 
 
