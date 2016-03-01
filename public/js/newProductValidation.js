@@ -8,6 +8,7 @@ $(function () {
     $("#lastUpdate").datepicker({
         maxDate: '0'
     });
+    $("#tags").tagit();
 });
 
 $().ready(function() {
@@ -37,6 +38,11 @@ $().ready(function() {
                         return year + '-' + month + '-' + day;
                     },
                     dateAfter: "1970-01-01"
+                }
+            },
+            tags: {
+                numberOfTags: {
+                    minimum: 1
                 }
             }
         },
@@ -80,3 +86,13 @@ $.validator.addMethod("dateRange", function(value, element, arg) {
     return this.optional(element) || ( (dateBefore >= dateEntered) && (dateAfter <= dateEntered) )
 
 }, $.validator.format("Please specify a date between Jan 1, 1970 and today."));
+
+$.validator.addMethod("numberOfTags", function(value, element, params) {
+    var  minimum;
+
+    if (params.minimum) minimum = params.minimum;
+    else minimum = 1;
+
+    return this.optional(element) || value.split(",").length > minimum;
+
+}, "Please enter at least one tag");

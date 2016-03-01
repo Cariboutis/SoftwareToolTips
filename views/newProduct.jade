@@ -4,11 +4,14 @@ extends layout
 
 block headStyles
     link(rel='stylesheet', href='/stylesheets/newProductStyle.css')
+    link(rel='stylesheet', href='/stylesheets/jquery.tagit.css')
+    link(rel='stylesheet', href='/stylesheets/tagit.ui-zendesk.css')
 
 block headScripts
     script(src='/js/jquery.validate.min.js')
     script(src='/js/jquery-ui.min.js')
     script(src='/js/newProductValidation.js')
+    script(src='/js/tag-it.min.js')
 
 block content
 
@@ -40,6 +43,11 @@ block content
                     label(for="description") Description
                 .form-cell-input
                     textarea(form="newProductForm", name="description", id="description", rows="5")
+            .form-row
+                .form-cell-label
+                    label(for="tags") Tags
+                .form-cell-input
+                    input(type="text", name="tags", id="tags")
             .form-row
                 .form-cell
                     input(type="submit", value="Submit", class="submit-btn", id="submit")

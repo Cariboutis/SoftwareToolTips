@@ -21,8 +21,8 @@ var userprofile     = require('./routes/userprofile');
 var product         = require('./routes/product');
 
 //Server constants
-const debugServer = "localhost:3000";
-const prodServer = "seregil13.com:3000";
+const debugServer = "localhost";
+const prodServer = "seregil13.com";
 const SERVER = prodServer;
 const GOOGLE_CLIENT_ID = "159196631200-d1cf3beikgm0km95rjnvierd952ig5kc.apps.googleusercontent.com";
 const GOOGLE_CLIENT_SECRET = "R_mG-IVJm5zYdENS42Hld4y2";

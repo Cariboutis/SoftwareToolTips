@@ -66,7 +66,7 @@ INSERT INTO comments (commentBody, commentTime, productId, userId) VALUES ('Too 
 CREATE TABLE tags
 (
     tagId int NOT NULL AUTO_INCREMENT,
-    tag varchar(25) NOT NULL,
+    tag varchar(25) NOT NULL UNIQUE,
     PRIMARY KEY (tagId)
 );
 INSERT INTO tags (tag) VALUES ('Web Server');

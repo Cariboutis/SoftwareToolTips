@@ -1,4 +1,5 @@
 var url = require('url');
+var mysql = require('mysql');
 var express = require('express');
 
 
@@ -40,18 +41,74 @@ router.post('/new', function (req, res, next) {
     var lastUpdate = req.db.escape(req.body.lastUpdate);
     var description = req.db.escape(req.body.description);
     var now = req.db.escape(today());
+    var tags = req.body.tags.split(",");
 
     var d = new Date(lastUpdate);
     lastUpdate = "'" + d.getFullYear() + "-" + dateAddLeadingZero(d.getMonth() + 1) + "-" + dateAddLeadingZero(d.getDate()) + "'";
 
+    var values = {
+        productName: productName,
+        logoUrl: logoUrl,
+        version: versionNum,
+        lastUpdate: lastUpdate,
+        userId: req.session.user.userId,
+        description: description,
+        uploadDate: now
+    };
 
-    var insert = "INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, description, uploadDate) VALUES ("
-        + productName + ',' + logoUrl + ',' + versionNum + ',' + lastUpdate + ',' + req.session.user.userId + ',' + description + ',' + now + ');';
+    // NOTE: This will only work in MySQL
+    var insert = "INSERT INTO products SET ?";
 
-    console.log("Inserting: " + insert);
+    console.log(tags);
 
-    var query = req.db.query(insert, function (err, rows) {
+
+    //var insert = "INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, description, uploadDate) VALUES ("
+    //    + productName + ',' + logoUrl + ',' + versionNum + ',' + lastUpdate + ',' + req.session.user.userId + ',' + description + ',' + now + ');';
+
+    //console.log("Inserting: " + mysql.format(insert, values));
+
+    var query = req.db.query(insert, values, function (err, rows) {
         if (err) throw err; // TODO: Handle error gracefully
+
+        console.log(rows);
+
+        var productId = rows.insertId;
+
+        if (tags.length < 1) return;
+
+        var insertTags = "INSERT IGNORE INTO tags (tag) VALUES ";
+        for (var i = 0; i < tags.length - 1; ++i) {
+            insertTags += "(" + req.db.escape(tags[i]) + "),";
+        }
+
+        insertTags += "(" + req.db.escape(tags[tags.length-1]) + ")";
+
+        console.log("Inserting: " + mysql.format(insertTags, [tags]));
+
+        req.db.query(insertTags, function(err, rows) {
+            if (err) throw err; // TODO: Handle error gracefully
+
+            console.log(rows);
+
+            var insertProductTags = "INSERT INTO productTags VALUES";
+
+            for (var i = 0; i < tags.length - 1; ++i) {
+                insertProductTags += "(" + req.db.escape(productId) + ", (SELECT tagId FROM tags where tag=" + req.db.escape(tags[i]) + ")),";
+            }
+
+            insertProductTags += "(" + req.db.escape(productId) + ", (SELECT tagId FROM tags where tag=" + req.db.escape(tags[tags.length - 1]) + "))";
+
+            console.log(insertProductTags);
+
+            req.db.query(insertProductTags, function(err, rows) {
+                if (err) throw err; // TODO: Handle error gracefully
+
+                console.log(rows);
+            })
+
+        })
+
+
     });
 
     res.redirect('/');
