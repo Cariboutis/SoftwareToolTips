@@ -94,7 +94,7 @@ app.use(function(req,res,next) {
 app.use('/', index);
 app.use('/', login);
 app.use('/users', users);
-app.use('/userprofile', userprofile);
+app.use('/user', userprofile);
 app.use('/product', product);
 
 // catch 404 and forward to error handler
