@@ -6,8 +6,23 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    req.session.works = "yes";
-    res.render('index', { title: 'Software Tool Tips' });
+   // req.session.works = "yes";
+    //res.render('index', { title: 'Software Tool Tips' });
+
+    var query="SELECT uploadDate,productName,description,logoUrl,version FROM products ORDER BY uploadDate DESC limit 3 ";
+    req.db.query(query, function(err, rows){
+        if(err)throw err;
+       rows = rows.map(function(product) {
+
+            if(product.description &&  product.description.length>255) {
+                product.description = product.description.substring(0,254)+"...";
+
+            }
+            return product;
+        });
+        res.render('index', { title: 'Software Tool Tips',products:rows});
+    });
+
 });
 
 // Render About page

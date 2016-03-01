@@ -10,7 +10,6 @@ router.get('/login', function(req,res,next) {
     if(req.session.isLoggedIn){
         res.redirect('/');
     } else {
-        req.session.username = "Me!";
         res.render('login', {title: 'Log In', server: req.server});
     }
 });

@@ -14,36 +14,12 @@ block content
         .col-md-6
             h3 New Posts
             .container.col-md-11
-                .post
-                    h4 Title
-                    .container.image.col-md-4
-                        p LOGO HERE
-                    p Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.
-                    .container.col-md-12.tags
-                        button(class="btn tag") TAG
-                        button(class="btn tag") TAG
-                        button(class="btn tag") TAG
-                        button(class="btn tag") TAG
-
-                .post
-                    h4 Title
-                    .container.image.col-md-4
-                        p LOGO HERE
-                    p Lorem exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.
-                    .container.col-md-12.tags
-                        button(class="btn tag") TAG
-                        button(class="btn tag") TAG
-
-
-                .post
-                    h4 Title
-                    .container.image.col-md-4
-                        p LOGO HERE
-                    p Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.
-                    .container.col-md-12.tags
-                        button(class="btn tag") TAG
-                        button(class="btn tag") TAG
-                        button(class="btn tag") TAG
+                each product in products
+                    .post
+                        h4= product.productName
+                        .container.image.col-md-4
+                           img(src="#{product.logoUrl}",class="logo")
+                        p= product.description
 
         #popular.col-md-6
             h3 Popular Posts
