@@ -43,6 +43,9 @@ router.get('/auth/google/callback',
                 req.session.user = user;
                 res.redirect('/');
             } else {
+                if (req.user.photos.length > 0) {
+                  req.session.profileImageUrl = req.user.photos[0].value;
+                }
                 res.redirect('/createUser')
             }
 
@@ -115,10 +118,11 @@ router.post('/createUser', function(req,res) {
     } else {
         var username = req.body.username;
         var email = req.session.email;
+        var profileImageUrl = req.session.profileImageUrl;
 
         var insert = "INSERT INTO users SET ?";
 
-        req.db.query(insert, {username:username,email:email}, function(err, result) {
+        req.db.query(insert, {username:username,email:email,profileImageUrl:profileImageUrl}, function(err, result) {
             if (err) throw err; // TODO: Handle error gracefully
 
             var select = "SELECT userId, username, email FROM users WHERE userId = " + result.insertId + "";
