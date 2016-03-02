@@ -2,11 +2,11 @@
     float:right;
 }
 
-.post {
+.comment {
     width: 100%;
     margin: .5em auto .5em auto;
     padding: 1em;
-    background-color:#85B585;
+    background-color: #dbdbdb;
     border-radius: .25em;
     line-height: 20%;
 }

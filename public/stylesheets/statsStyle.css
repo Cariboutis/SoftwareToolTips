@@ -39,12 +39,12 @@
 }
 
 .chart {
-    float:left;
-    width:30em;
+    display: inline-block;
+    width:400px;
+
 }
 .chart h2 {
-    margin: auto;
-    text-align: center;
+    margin-left: 3em;
 }
 
 #topChart {

@@ -187,13 +187,33 @@ router.get('/:pname/:vnum', function(req,res,next) {
         } else {
 
             var product = rows[0];
-            var selectCQ = "SELECT * FROM comments INNER JOIN users ON comments.userId=users.userId WHERE productId = \'" + product.productId + "\' LIMIT 25";
-            var commentsQuery = req.db.query(selectCQ , function(err, cRows) {
-                var Pcomments = cRows;
-                res.render('product', { product: product, comments: Pcomments});
-            });
+            res.render('product', { product: product});
         }
     });
+
+});
+
+router.post('/:productId/comments', function(req,res,next) {
+    var pId = req.params.productId;
+    var off = req.body.offset;
+    if(!isNaN(pId) && (!isNaN(off) || off == undefined )){
+        var pageSize = 5;
+
+        var id = parseInt(pId);
+        var query = "SELECT commentBody, commentTime, compatibility, documentation, easeOfUse, learnability, overallRate, username FROM comments c INNER JOIN users u ON c.userId = u.userId WHERE productId = " + id + " ORDER BY commentTime LIMIT " + pageSize;
+        if(off){
+            var offset = parseInt(off);
+            query += " OFFSET " + offset;
+        }
+
+        req.db.query(query,  function(err, rows) {
+            if(err) {
+                next(err);
+            } else {
+                res.json(rows);
+            }
+        });
+    }
 
 });
 

@@ -59,9 +59,47 @@ block content
         .container
             .col-md-100
                 h3 Comments
-                .container.col-md-100
-                    each comment in comments
-                        .post
-                            p.comUser=comment.username
-                            p.comBody=comment.commentBody
-                            p.comDate=comment.commentTime
+                .container.col-md-100#commentList
+
+
+    script.
+        var offset = 0;
+        var pId = #{product.productId};
+
+        function getComments(callback){
+            $.ajax({
+                type: "POST",
+                url: "/product/" + pId + "/comments",
+                cache: false,
+                data: {offset:offset},
+                success: function (result) {
+                    callback(result);
+                },
+                error: function (res, p1, p2) {
+                    console.log("error:" + res);
+                }
+            });
+        }
+
+        function appendComments(comments){
+            for(var i in comments){
+                var comment = comments[i];
+                var com = createComment(comment);
+                $("#commentList").append(com);
+            }
+        }
+
+        function createComment(com){
+            var comE = $(document.createElement('div')).attr('class','comment');
+            var e = $(document.createElement('p')).attr('class','comUser').text(com.username);
+            comE.append(e);
+            e = $(document.createElement('p')).attr('class','comBody').text(com.commentBody);
+            comE.append(e);
+            e = $(document.createElement('p')).attr('class','comDate').text(com.commentTime);
+            comE.append(e);
+            return comE;
+        }
+
+        $(document).ready(function(){
+           getComments(appendComments);
+        });

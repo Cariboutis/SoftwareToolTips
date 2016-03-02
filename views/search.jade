@@ -30,19 +30,13 @@ block content
                 button.submit-btn.btn#submitBtn Submit
 
     #productTable
-        #products
-            each post in posts
-                .row
-                    .row-item.row-name
-                        a(href="/product/" + "#{post.n}")= post.n
-                    .row-item.row-version
-                        a(href="/product/" + "#{post.n}" + "/" + "#{post.v}")=post.v
-                    .row-item.row-rating= post.o
-                    .row-item.row-date= post.d
-                    .row-item.row-tags
-                        each tag in post.tags
-                            a.tag(href="/search?tags=#{tag}")
-                                | #{tag}
+        .row
+            .row-item.row-name.header Name
+            .row-item.row-version.header Version
+            .row-item.row-rating.header Rating
+            .row-item.row-date.header Last Updated
+            .row-item-row-data.header Tags
+
 
     button.btn#Back Back
     button.btn#Next Next
@@ -84,7 +78,7 @@ block content
 
         function createTable(result){
             var posts = result.posts;
-            if(posts.length == 0) $("#Next").hide();
+            if(posts.length < (searchOptions.limit || 10)) $("#Next").hide();
             $('#products').remove();
             var table = $(document.createElement('div')).attr('id', 'products');
             for (var i in posts) {
@@ -166,6 +160,7 @@ block content
                 delete searchOptions.tags;
             }
             $("#Back").hide();
+            $("#Next").show();
             searchOptions.page = 1;
             refreshTable();
         }
