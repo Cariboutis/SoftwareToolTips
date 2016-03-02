@@ -1,0 +1,11 @@
+//
+   Created by Nathan on 3/1/2016.
+
+extends layout
+
+block content
+    h1 #{name} - Versions
+    ul
+        each product in products
+            li
+                a(href="/product/#{name}/#{product.version}")= product.version

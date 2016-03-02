@@ -36,6 +36,7 @@ block bottomScripts
     script.
         var productName = '#{productName}';
         var data;
+        var chartWidth = 400, chartHeight = 300;
         $.ajax({
             type: "GET",
             url: "/product/" +  productName + "/statData",
@@ -55,11 +56,11 @@ block bottomScripts
                 }
 
                 setupConsts(vData);
-                setupChart(vData,1,"#overallChart",500,300);
-                setupChart(vData,2,"#learnChart",500,300);
-                setupChart(vData,3,"#useChart",500,300);
-                setupChart(vData,4,"#compatChart",500,300);
-                setupChart(vData,5,"#docChart",500,300);
+                setupChart(vData,1,"#overallChart",chartWidth,300);
+                setupChart(vData,2,"#learnChart",chartWidth,300);
+                setupChart(vData,3,"#useChart",chartWidth,300);
+                setupChart(vData,4,"#compatChart",chartWidth,300);
+                setupChart(vData,5,"#docChart",chartWidth,300);
             },
             error: function(res,p1,p2) {
                 alert("error:"+res);
@@ -239,9 +240,9 @@ block bottomScripts
             }
             maxY = 0;
             setupConsts(vData);
-            updateChart(vData,1,"#overallChart",500,300);
-            updateChart(vData, 2, "#learnChart", 500, 300);
-            updateChart(vData, 3, "#useChart", 500, 300);
-            updateChart(vData, 4, "#compatChart", 500, 300);
-            updateChart(vData, 5, "#docChart", 500, 300);
+            updateChart(vData,1,"#overallChart",chartWidth,300);
+            updateChart(vData, 2, "#learnChart", chartWidth, 300);
+            updateChart(vData, 3, "#useChart", chartWidth, 300);
+            updateChart(vData, 4, "#compatChart", chartWidth, 300);
+            updateChart(vData, 5, "#docChart", chartWidth, 300);
         }

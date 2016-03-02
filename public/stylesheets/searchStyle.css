@@ -30,6 +30,7 @@ tr {
     margin: auto 0.25em auto 0.25em;
     padding: 0.1em 0.2em 0.1em 0.2em;
     float:left;
+    font-size: 14px;
 }
 
 .row {
@@ -50,4 +51,97 @@ tr {
     float:left;
     cursor: hand;
     margin: auto 1em auto 1em;
+}
+
+
+#filters {
+    clear:both;
+}
+
+input {
+    width: 100%;
+}
+#name-control {
+    width: 25%;
+}
+
+#tag-control {
+    width: 50%;
+}
+
+.form-control {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    height: 3em;
+    float: left;
+    border: none;
+}
+.form-label {
+    margin-top:0.5em;
+    width:25%;
+    float: left;
+    text-align: right;
+    display: inline-block;
+}
+
+.form-input {
+    float: left;
+    width: 70%;
+    margin-right:0;
+    display: inline-block;
+}
+
+#tagInput {
+    margin-top: 0;
+}
+
+.form-input ul{
+    margin: 0;
+
+}
+
+#productTable {
+    padding-top:2em;
+    padding-bottom: 2em;
+    clear: both;
+}
+
+#submit {
+    width: 10%;
+    margin-top:0.45em;
+    float:left;
+}
+
+#nameInput {
+    height:2.2em;
+    border: 1px solid #C6C6C6;
+    box-shadow: none;
+    border-radius: 0.25em;
+    font-size: 1.1em;
+    color: #222;
+    font-family: Verdana,Arial,sans-serif;
+}
+
+.row-name {
+    width: 15%;
+}
+
+.row-version {
+    width: 5%;
+}
+
+.row-rating {
+    width: 6%;
+}
+
+.row-date {
+    width: 12%;
+}
+
+button {
+    margin-right: 1em;
+}
+#Back {
+    display: none;
 }

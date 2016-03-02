@@ -23,7 +23,7 @@ var product         = require('./routes/product');
 //Server constants
 const debugServer = "localhost";
 const prodServer = "seregil13.com";
-const SERVER = prodServer;
+const SERVER = debugServer;
 const GOOGLE_CLIENT_ID = "159196631200-d1cf3beikgm0km95rjnvierd952ig5kc.apps.googleusercontent.com";
 const GOOGLE_CLIENT_SECRET = "R_mG-IVJm5zYdENS42Hld4y2";
 
@@ -122,8 +122,10 @@ if (app.get('env') === 'development') {
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
+    console.log("Error: " + err.message);
+    if(!err.status) err.message = "Internal Server Error";
     res.render('error', {
-        status: err.status,
+        status: err.status || 500,
         message: err.message,
         error: {}
     });

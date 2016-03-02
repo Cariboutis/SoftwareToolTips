@@ -5,34 +5,59 @@ extends layout
 
 block headStyles
     link(rel='stylesheet', href='/stylesheets/searchStyle.css')
+    link(rel='stylesheet', href='/stylesheets/jquery.tagit.css')
+    link(rel='stylesheet', href='/stylesheets/tagit.ui-zendesk.css')
+
+block headScripts
+    script(src='/js/jquery-ui.min.js')
+    script(src='/js/tag-it.min.js')
 
 block content
     h1 Search
-    #products
-    each post in posts
-        .row
-            .row-item.row-name
-                a(href="/product/" + "#{post.n}")= post.n
-            .row-item.row-version
-                a(href="/product/" + "#{post.n}" + "/" + "#{post.v}")=post.v
-            .row-item.row-rating= post.o
-            .row-item.row-date= post.d
-            .row-item.row-tags
-                    each tag in post.tags
-                        a.tag(href="/search?tags=#{tag}")
-                            | #{tag}
+    #filters
+        .form-control#name-control
+            .form-label
+                label Name
+            .form-input
+                input(type="text")#nameInput
+        .form-control#tag-control
+            .form-label
+                label Tags
+            .form-input#tagInput
+                input(type="text")#tagsInput
+        .form-submit
+            .form-input#submit
+                button.submit-btn.btn#submitBtn Submit
 
+    #productTable
+        #products
+            each post in posts
+                .row
+                    .row-item.row-name
+                        a(href="/product/" + "#{post.n}")= post.n
+                    .row-item.row-version
+                        a(href="/product/" + "#{post.n}" + "/" + "#{post.v}")=post.v
+                    .row-item.row-rating= post.o
+                    .row-item.row-date= post.d
+                    .row-item.row-tags
+                        each tag in post.tags
+                            a.tag(href="/search?tags=#{tag}")
+                                | #{tag}
+
+    button.btn#Back Back
+    button.btn#Next Next
 
     script.
 
+        var searchOptions = {page:1};
         /*
-            options can contain:
-            {
-                limit: number //Number of products to return, default 25
-                page: number //The page to return, aka offset, default 1
-                tags: string[] //All tags to filter by
-                name: string //Name to filter products by
-            }
+         options can contain:
+         {
+         limit: number //Number of products to return, default 10
+         page: number //The page to return, aka offset, default 1
+         tags: string[] //All tags to filter by
+         name: string //Name to filter products by
+         }
          */
         function getProducts(callback, options) {
             $.ajax({
@@ -57,6 +82,120 @@ block content
             }
         }
 
+        function createTable(result){
+            var posts = result.posts;
+            if(posts.length == 0) $("#Next").hide();
+            $('#products').remove();
+            var table = $(document.createElement('div')).attr('id', 'products');
+            for (var i in posts) {
+                var post = posts[i];
+                var row = createRow(post);
+                table.append(row);
+            }
+            $('#productTable').append(table);
+        }
+
+        function createRow(post){
+            var row = $(document.createElement('div')).attr('class','row');
+
+            var name = $(document.createElement('div')).attr('class','row-item row-name');
+            name.append($(document.createElement('a')).attr('href',"/product/" + post.n).text(post.n));
+            row.append(name);
+
+            var version = $(document.createElement('div')).attr('class','row-item row-version');
+            version.append($(document.createElement('a')).attr('href',"/product/" + post.n + "/" + post.v).text(post.v));
+            row.append(version);
+
+            var rating = $(document.createElement('div')).attr('class','row-item row-rating');
+            rating.text(post.o || "No Rating")
+
+            row.append(rating);
+
+            var date = $(document.createElement('div')).attr('class','row-item row-date');
+            date.text(post.d);
+            row.append(date);
+
+            var tags = $(document.createElement('div')).attr('class','row-item row-tags');
+            for(var i in post.tags){
+                var tag = post.tags[i];
+                var ref = $(document.createElement('div'))
+                        .attr('class','tag')
+                        .click(addTag)
+                        .text(tag);
+                tags.append(ref);
+            }
+            row.append(tags);
+
+            return row;
+        }
+
+        function addTag(){
+            var tag = $(this).text();
+            var input = $("#tagsInput");
+            if(searchOptions.hasOwnProperty("tags")){
+                if(searchOptions.tags.indexOf(tag) < 0) {
+                    input.tagit('createTag',tag);
+                    searchOptions.tags.push(tag);
+                } else {
+                    return;
+                }
+            } else {
+                input.tagit('createTag',tag);
+                searchOptions.tags = [tag];
+            }
+            refreshTable();
+        }
+
+        function refreshTable(){
+            getProducts(createTable,searchOptions);
+        }
+
+        function newSearch(){
+            var name = $("#nameInput").val();
+            var tags = $("#tagsInput").val();
+            if(name){
+                searchOptions.name = name;
+            } else {
+                delete searchOptions.name;
+            }
+
+            if(tags) {
+                var list = tags.split(',');
+                searchOptions.tags = list;
+            } else {
+                delete searchOptions.tags;
+            }
+            $("#Back").hide();
+            searchOptions.page = 1;
+            refreshTable();
+        }
+
+        function nextPage(){
+
+            searchOptions.page++;
+
+            $("#Back").show();
+            refreshTable();
+        }
+
+        function backPage() {
+            searchOptions.page--;
+            if(searchOptions.page == 1){
+                $("#Back").hide();
+            }
+            $("#Next").show();
+            refreshTable();
+        }
+
         $(document).ready(function() {
-            getProducts(printNameDivs,{});
+            //getProducts(printNameDivs,{});\
+            $("#submitBtn").click(newSearch);
+            $("#tagsInput").tagit({
+                tagLimit:5,
+                availableTags: "#{allTags}".split(',')
+            });
+            $("#Back").hide();
+            $("#Back").click(backPage);
+            $("#Next").click(nextPage);
+            refreshTable();
         })

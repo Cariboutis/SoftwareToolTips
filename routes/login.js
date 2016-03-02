@@ -26,18 +26,21 @@ router.get('/auth/google/callback',
     passport.authenticate('google', { failureRedirect: '/login' }),
     function(req, res) {
         // Successful Google authentication
-        req.session.isAuthenticated = true;
-
         var email = req.user.email;
-        req.session.email = email;
 
         var e = req.db.escape(email);
         var select = "SELECT userId, username, email FROM users WHERE email = " + e + "";
 
         req.db.query(select, function(err, rows) {
-            if (err) throw err; // TODO: Handle error gracefully
-            var user = rows[0];
+            if(err){
+                res.statusCode = 500;
+                res.redirect('error');
+            } else {
+                req.session.isAuthenticated = true;
+                req.session.email = email;
 
+                var user = rows[0];
+            }
             if(user != undefined){
                 req.session.isLoggedIn = true;
                 req.session.user = user;
@@ -59,48 +62,6 @@ router.get('/logout', function(req, res){
     req.logout();
     res.redirect('/');
 });
-
-
-//// AJAX call to verify a token
-//router.post('/tokensignin', function(req,res) {
-//    var idtoken = req.body.idtoken;
-//    var email = req.body.email;
-//
-//    var options = {
-//        host: 'www.googleapis.com',
-//        path: '/oauth2/v3/tokeninfo?' + qs.stringify({id_token: idtoken}),
-//        method: 'GET',
-//        accept: '*/*'
-//    };
-//
-//    // Send token to Google to authenticate
-//    var result = https.request(options, function(response) {
-//        if(response.statusCode == 200){
-//            // User is authenticated by Google
-//            req.session.isAuthenticated = true;
-//            req.session.email = email;
-//
-//            var e = req.db.escape(email);
-//            var select = "SELECT userId, username, email FROM users WHERE email = " + e + "";
-//
-//            req.db.query(select, function(err, rows) {
-//                if (err) throw err;
-//                var user = rows[0];
-//
-//                if(user != undefined){
-//                    req.session.isLoggedIn = true;
-//                    req.session.user = user;
-//                }
-//                res.send("OK");
-//            });
-//        }
-//    });
-//
-//    result.end();
-//    result.on('error', function(e) {
-//        console.error(e);
-//    });
-//});
 
 // Render create user page as long as they are authenticated
 router.get('/createUser', function(req,res) {

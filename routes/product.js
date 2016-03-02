@@ -107,36 +107,25 @@ router.post('/new', function (req, res, next) {
             })
 
         })
-
-
     });
 
     res.redirect('/');
 });
 
-//TODO Should return a list of products with the same name, but different versions
-router.get('/:pname', function(req,res,next) {
-    /*
-    var comments = [];
-    var product = {};
-    var selectPQ = "SELECT * FROM products WHERE productName = \'" + req.params.pname + "\'";
 
-    console.log(selectPQ);
-	
-    var productQuery = req.db.query(selectPQ,  function(err, pRows) {
-        if(pRows == null){
-            res.redirect('/About');
+router.get('/:pname', function(req,res,next) {
+
+    var productName = req.db.escape(req.params.pname);
+    var selectPQ = "SELECT version FROM products WHERE productName = " + productName;
+
+    req.db.query(selectPQ,  function(err, rows) {
+        if(err){
+            next(err);
         } else {
-            var product = pRows[0];
-            var selectCQ = "SELECT * FROM comments INNER JOIN users ON comments.userId=users.userId WHERE productId = \'" + product.productId + "\'";
-            var commentsQuery = req.db.query(selectCQ , function(err, cRows) {
-                var Pcomments = cRows;
-                res.render('product', { productName : product.productName, logoUrl: product.logoUrl, version: product.version, lastUpdate: product.lastUpdate, comments: Pcomments});
-            });
+            res.render('productList',{products:rows,name: req.params.pname});
         }
     });
-    */
-    next();
+
 });
 
 router.get('/:pname/stats', function(req,res,next) {
