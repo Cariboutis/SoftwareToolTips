@@ -34,6 +34,25 @@ CREATE TABLE products
   PRIMARY KEY (productId),
   FOREIGN KEY (userId) REFERENCES users(userId)
 );
+
+
+CREATE TABLE comments
+(
+  commentId int NOT NULL AUTO_INCREMENT,
+  commentBody varchar(1023) NOT NULL,
+  commentTime DATETIME NOT NULL,
+  productId int NOT NULL,
+  userId int NOT NULL,
+  overallRate int NOT NULL,
+  learnability int NOT NULL,
+  easeOfUse int NOT NULL,
+  compatibility int NOT NULL,
+  documentation int NOT NULL,
+  PRIMARY KEY (commentId),
+  FOREIGN KEY (productId) REFERENCES products(productId),
+  FOREIGN KEY (userId) REFERENCES users(userId)
+);
+
 INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, overallRate,learnability,easeOfUse,compatibility,documentation,description, uploadDate) VALUES ('MAMP','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','1.0','2015-10-01',1,1.3,5.6,9,3.4,7.5, 'MAMP installs a local server environment in a matter of seconds on your computer. It comes free of charge, and is easily installed. MAMP will not compromise any existing Apache installation already running on your system. You can install Apache, PHP and MySQL without starting a script or having to change any configuration files! Furthermore, if MAMP is no longer needed, just delete the MAMP folder and everything returns to its original state (i.e. MAMP does not modify any of the "normal" system).Similar to a Linux-Distribution, MAMP is a combination of free software and thus it is offered free of charge. MAMP is released under the GNU General Public License and may thereby be distributed freely within the boundaries of this license. Please note: some of the included software is released using a different license. In these cases, the corresponding license applies.','2013-11-13 02:30:30');
 INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, overallRate,learnability,easeOfUse,compatibility,documentation,description, uploadDate) VALUES ('MAMP','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','2.0','2015-10-01',1,1.3,5.6,9,3.4,7.5, 'MAMP installs a local server environment in a matter of seconds on your computer. It comes free of charge, and is easily installed. MAMP will not compromise any existing Apache installation already running on your system. You can install Apache, PHP and MySQL without starting a script or having to change any configuration files! Furthermore, if MAMP is no longer needed, just delete the MAMP folder and everything returns to its original state (i.e. MAMP does not modify any of the "normal" system).Similar to a Linux-Distribution, MAMP is a combination of free software and thus it is offered free of charge. MAMP is released under the GNU General Public License and may thereby be distributed freely within the boundaries of this license. Please note: some of the included software is released using a different license. In these cases, the corresponding license applies.','2014-11-13 02:30:30');
 INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, overallRate,learnability,easeOfUse,compatibility,documentation,description, uploadDate) VALUES ('MAMP','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','3.0','2015-10-01',1,1.3,5.6,9,3.4,7.5, 'MAMP installs a local server environment in a matter of seconds on your computer. It comes free of charge, and is easily installed. MAMP will not compromise any existing Apache installation already running on your system. You can install Apache, PHP and MySQL without starting a script or having to change any configuration files! Furthermore, if MAMP is no longer needed, just delete the MAMP folder and everything returns to its original state (i.e. MAMP does not modify any of the "normal" system).Similar to a Linux-Distribution, MAMP is a combination of free software and thus it is offered free of charge. MAMP is released under the GNU General Public License and may thereby be distributed freely within the boundaries of this license. Please note: some of the included software is released using a different license. In these cases, the corresponding license applies.',NOW());
@@ -2072,22 +2091,6 @@ INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, overall
 INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, overallRate,learnability,easeOfUse,compatibility,documentation,description, uploadDate) VALUES ('ZZ','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','3.0','2015-11-01',4,2.6,1.0,3.7,5.2,5.3, 'This software needs no introduction.',NOW());
 
 
-CREATE TABLE comments
-(
-  commentId int NOT NULL AUTO_INCREMENT,
-  commentBody varchar(1023) NOT NULL,
-  commentTime DATETIME NOT NULL,
-  productId int NOT NULL,
-  userId int NOT NULL,
-  overallRate int NOT NULL,
-  learnability int NOT NULL,
-  easeOfUse int NOT NULL,
-  compatibility int NOT NULL,
-  documentation int NOT NULL,
-  PRIMARY KEY (commentId),
-  FOREIGN KEY (productId) REFERENCES products(productId),
-  FOREIGN KEY (userId) REFERENCES users(userId)
-);
 INSERT INTO comments (productId, userId, overallRate, learnability, easeOfUse, compatibility, documentation, commentBody, commentTime) VALUES (1, 1, 0.6, 7.1, 7.0, 8.4, 8.4, 'PLEASE DOWNLOAD AT YOUR OWN RISK! Downloaded this software, and within minutes my house burned down.', '2016-02-01 10:09:30');
 INSERT INTO comments (productId, userId, overallRate, learnability, easeOfUse, compatibility, documentation, commentBody, commentTime) VALUES (1, 1, 2.4, 7.0, 5.7, 6.4, 0.5, 'Try again', '2016-02-01 10:09:30');
 INSERT INTO comments (productId, userId, overallRate, learnability, easeOfUse, compatibility, documentation, commentBody, commentTime) VALUES (1, 1, 4.5, 10.0, 3.8, 6.6, 5.3, 'Worth every penny', '2016-02-01 10:09:30');

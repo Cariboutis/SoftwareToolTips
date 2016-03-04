@@ -187,7 +187,12 @@ router.get('/:pname/:vnum', function(req,res,next) {
         } else {
 
             var product = rows[0];
-            res.render('product', { product: product});
+            var hasCommented = false;
+            if(req.session.isLoggedIn){
+                hasCommented = (req.session.commentedOn.indexOf(product.productId) > -1);
+            }
+
+            res.render('product', { product: product, hasCommented:hasCommented });
         }
     });
 
@@ -200,7 +205,7 @@ router.post('/:productId/comments', function(req,res,next) {
         var pageSize = 5;
 
         var id = parseInt(pId);
-        var query = "SELECT commentBody, commentTime, compatibility, documentation, easeOfUse, learnability, overallRate, username FROM comments c INNER JOIN users u ON c.userId = u.userId WHERE productId = " + id + " ORDER BY commentTime LIMIT " + pageSize;
+        var query = "SELECT commentBody, commentTime, compatibility, documentation, easeOfUse, learnability, overallRate, username FROM comments c INNER JOIN users u ON c.userId = u.userId WHERE productId = " + id + " ORDER BY commentTime DESC LIMIT " + pageSize;
         if(off){
             var offset = parseInt(off);
             query += " OFFSET " + offset;
@@ -214,6 +219,65 @@ router.post('/:productId/comments', function(req,res,next) {
             }
         });
     }
+
+});
+
+function isValid(req, pId){
+    if(isNaN(req.body.overall) || isNaN(req.body.compatibility) || isNaN(req.body.easeOfUse)
+        || isNaN(req.body.documentation) || isNaN(req.body.learnability)
+        || (req.body.body == undefined) || (!req.session.isLoggedIn)
+        || (req.session.user == undefined) || isNaN(pId)){
+        return false;
+    } else {
+        return true;
+    }
+}
+
+router.post('/:productId/comment', function(req,res,next) {
+    var pId = req.params.productId;
+    if(isValid(req, pId)) {
+        var now = today();
+        var values = {
+            commentBody : req.body.body,
+            overallRate : parseInt(req.body.overall),
+            compatibility : parseInt(req.body.compatibility),
+            easeOfUse : parseInt(req.body.easeOfUse),
+            documentation : parseInt(req.body.documentation),
+            learnability : parseInt(req.body.learnability),
+            productId : parseInt(pId),
+            userId : req.session.user.userId,
+            commentTime: now
+        };
+
+        // NOTE: This will only work in MySQL
+        var insert = "INSERT INTO comments SET ?";
+
+        // NOTE: inserting values this way escapes all non-number values
+        req.db.query(insert, values, function(err, rows) {
+            if(err) {
+                next(err);
+            } else {
+
+                var commentId = rows.insertId;
+
+                var query = "SELECT commentBody, commentTime, compatibility, documentation, easeOfUse, learnability, overallRate FROM comments c WHERE commentId = " + commentId + " ORDER BY commentTime LIMIT 1";
+
+                req.db.query(query, function(err, rows) {
+                    if(err) {
+                        next(err);
+                    } else {
+                        var comment = rows[0];
+                        comment.username = req.session.user.username;
+                        req.session.commentedOn.push(parseInt(pId));
+                        res.json(rows[0]);
+                    }
+                });
+            }
+        });
+    } else {
+        next("Invalid data submitted");
+    }
+
 
 });
 

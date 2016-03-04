@@ -59,7 +59,39 @@ block content
         .container
             .col-md-100
                 h3 Comments
+                if(session.isLoggedIn)
+                    if(!hasCommented)
+                        .container.col-md-100#addComment
+                            form
+                                textarea(type="text", name="body")#commentBody.form-control
+                                label Overall Rating
+                                select(name="overall")
+                                    each r in [0,1,2,3,4,5,6,7,8,9,10]
+                                        option(value="#{r}")= r
+                                label Learnability
+                                select(name="learnability")
+                                    each r in [0,1,2,3,4,5,6,7,8,9,10]
+                                        option(value="#{r}")= r
+                                label Ease of Use
+                                select(name="easeOfUse")
+                                    each r in [0,1,2,3,4,5,6,7,8,9,10]
+                                        option(value="#{r}")= r
+                                label Compatibility
+                                select(name="compatibility")
+                                    each r in [0,1,2,3,4,5,6,7,8,9,10]
+                                        option(value="#{r}")= r
+                                label Documentation
+                                select(name="documentation")
+                                    each r in [0,1,2,3,4,5,6,7,8,9,10]
+                                        option(value="#{r}")= r
+                                button.btn.submit-btn#createReview Create Review
+                    else
+                        p You have already created a review
+                else
+                    p Please log in to add a review
                 .container.col-md-100#commentList
+                #loadMore
+                    button.btn#more Load More
 
 
     script.
@@ -82,10 +114,16 @@ block content
         }
 
         function appendComments(comments){
+            offset+= comments.length;
+            if(comments.length < 5){
+                $("#more").hide();
+            }
             for(var i in comments){
                 var comment = comments[i];
                 var com = createComment(comment);
-                $("#commentList").append(com);
+                com.hide();
+                com.appendTo("#commentList");
+                com.slideDown('slow');
             }
         }
 
@@ -100,6 +138,44 @@ block content
             return comE;
         }
 
+        function loadMore(){
+            getComments(appendComments);
+
+        }
+
+        function addCreatedReview(result){
+            var com = createComment(result);
+            //Add one due to your new review
+            offset++;
+            com.hide();
+            com.prependTo("#commentList");
+            com.slideDown('slow');
+        }
+
+        function createReview(event){
+
+            event.preventDefault();
+            $('#createReview').prop("disabled",true);
+            var formdata = $('form').serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "/product/" + pId + "/comment",
+                cache: false,
+                data: formdata,
+                success: function (result) {
+                    addCreatedReview(result);
+                    $('#addComment').slideUp();
+                },
+                error: function (res, p1, p2) {
+                    console.log("error:" + res);
+                    $('#createReview').prop("disabled",false);
+                }
+            });
+        }
+
         $(document).ready(function(){
            getComments(appendComments);
+            $("#more").click(loadMore);
+            $("#createReview").click(createReview);
         });
