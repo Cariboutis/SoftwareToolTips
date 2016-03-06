@@ -47,8 +47,17 @@ block content
                     .bar#documentation(style="width:#{(product.documentation / 10.0) * 100}%")
             else
                 h2 No Rating
-        #tags
-            h1 Tags
+        if(product.tags)
+            #tags
+
+                h1 Tags
+                each tag in product.tags.split(',')
+                    .tag= tag
+
+    #edit
+        if(session.isLoggedIn && product.userId == session.user.userId)
+            a(href="/product/#{product.productName}/#{product.version}/edit")
+                button.btn#edit-btn Edit Product
     #description
         h1 #{product.productName} - #{product.version}
         img#logo(src="#{product.logoUrl}", onerror="this.style.display='none'")
@@ -89,9 +98,12 @@ block content
                         p You have already created a review
                 else
                     p Please log in to add a review
+                        a(href="/login")
+                            button.btn.highlight-btn#login Login
                 .container.col-md-100#commentList
                 #loadMore
-                    button.btn#more Load More
+                    button.btn.highlight-btn#more Load More
+
 
 
     script.
@@ -100,8 +112,8 @@ block content
 
         function getComments(callback){
             $.ajax({
-                type: "POST",
-                url: "/product/" + pId + "/comments",
+                type: "GET",
+                url: "/review/" + pId + "/comments",
                 cache: false,
                 data: {offset:offset},
                 success: function (result) {
@@ -127,20 +139,85 @@ block content
             }
         }
 
+        function removeComment(id){
+            $('#' + id).slideUp();
+        }
+
+        function deleteComment(){
+            if(confirm("Are you sure you want to delete this comment?")) {
+                var comId = $(this).closest(".comment").attr('id');
+                $.ajax({
+                    type: "DELETE",
+                    url: "/review/" + comId,
+                    success: function (result) {
+                        if (result.success) {
+                            removeComment(comId);
+                        } else {
+                            alert(result.err);
+                        }
+                    },
+                    error: function (res, p1, p2) {
+                        console.log("error:" + res);
+                    }
+                });
+            }
+        }
+
+        function rate(title,num,tag){
+            var hold = $(document.createElement('div')).attr('class', 'com-holder');
+            hold.append($(document.createElement('h4')).text(title));
+            hold.append($(document.createElement('p')).attr('class', 'com-rating-p').text(num + "/10"));
+            var rate = $(document.createElement('div')).attr('class', 'com-rate com-rating');
+            rate.append($(document.createElement('div')).attr('class', 'com-rate ' + tag).width(((num / 10.0) * 100) + "%"));
+            hold.append(rate);
+            return hold
+        }
+
+        function createRatings(com){
+            var sec = $(document.createElement('div')).attr('class','com-rating-sec');
+            sec.append(rate("Learnability",com.learnability,"learn-com"));
+            sec.append(rate("Ease of Use",com.easeOfUse,"eou-com"));
+            sec.append(rate("Compatibility",com.compatibility,"comp-com"));
+            sec.append(rate("Documentation",com.documentation,"doc-com"));
+            return sec;
+        }
+
+
         function createComment(com){
-            var comE = $(document.createElement('div')).attr('class','comment');
-            var e = $(document.createElement('p')).attr('class','comUser').text(com.username);
-            comE.append(e);
+            var comE = $(document.createElement('div')).attr('class','comment').attr('id',com.commentId);
+            var left = $(document.createElement('div')).attr('class','com-left');
+            var mid = $(document.createElement('div')).attr('class','com-body');
+            var right = $(document.createElement('div')).attr('class','com-right');
+            if("#{session.user ? session.user.userId : ''}" == com.userId){
+                var del = $(document.createElement('button')).attr('class','deleteButton').text("X");
+                del.click(deleteComment);
+                right.append(del);
+            }
+            var e = $(document.createElement('p')).attr('class', 'com-date').text(com.commentTime);
+            right.append(e);
+            e = $(document.createElement('a')).attr('href','/user/' + com.userId).attr('class','user-link');
+            e.append($(document.createElement('p')).attr('class','comUser').text(com.username));
+            left.append(e);
+            e = $(document.createElement('h3')).text("Review");
+            mid.append(e);
             e = $(document.createElement('p')).attr('class','comBody').text(com.commentBody);
-            comE.append(e);
-            e = $(document.createElement('p')).attr('class','comDate').text(com.commentTime);
-            comE.append(e);
+            mid.append(e);
+
+            e = $(document.createElement('h2')).attr('class','overall-com-text').text(com.overallRate + "/10");
+            left.append(e);
+
+            var rateSec = createRatings(com);
+            mid.append(rateSec);
+
+            comE.append(left);
+            comE.append(mid);
+            comE.append(right);
+
             return comE;
         }
 
         function loadMore(){
             getComments(appendComments);
-
         }
 
         function addCreatedReview(result){
@@ -160,8 +237,7 @@ block content
 
             $.ajax({
                 type: "POST",
-                url: "/product/" + pId + "/comment",
-                cache: false,
+                url: "/review/" + pId ,
                 data: formdata,
                 success: function (result) {
                     addCreatedReview(result);

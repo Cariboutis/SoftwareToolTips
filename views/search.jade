@@ -14,7 +14,7 @@ block headScripts
 
 block content
     h1 Search
-    #filters
+    form#filters
         .form-control#name-control
             .form-label
                 label Name
@@ -38,7 +38,8 @@ block content
             .row-item-row-data.header Tags
 
 
-    button.btn#Back Back
+    #backArea
+        button.btn#Back Back
     button.btn#Next Next
 
     script.
@@ -55,7 +56,7 @@ block content
          */
         function getProducts(callback, options) {
             $.ajax({
-                type: "POST",
+                type: "GET",
                 url: "/products",
                 cache: false,
                 data: options,
@@ -144,7 +145,8 @@ block content
             getProducts(createTable,searchOptions);
         }
 
-        function newSearch(){
+        function newSearch(event){
+            event.preventDefault();
             var name = $("#nameInput").val();
             var tags = $("#tagsInput").val();
             if(name){
@@ -166,11 +168,9 @@ block content
         }
 
         function nextPage(){
-
             searchOptions.page++;
-
-            $("#Back").show();
             refreshTable();
+            $("#Back").show();
         }
 
         function backPage() {
@@ -178,12 +178,12 @@ block content
             if(searchOptions.page == 1){
                 $("#Back").hide();
             }
-            $("#Next").show();
             refreshTable();
+            $("#Next").show();
         }
 
         $(document).ready(function() {
-            //getProducts(printNameDivs,{});\
+            $('#nameInput').focus();
             $("#submitBtn").click(newSearch);
             $("#tagsInput").tagit({
                 tagLimit:5,

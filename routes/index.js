@@ -1,6 +1,7 @@
 var express = require('express');
 var paginate = require('express-paginate');
 var url = require('url');
+var dateUtils = require('../utils/dateutils');
 
 var router = express.Router();
 
@@ -8,6 +9,8 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
    // req.session.works = "yes";
     //res.render('index', { title: 'Software Tool Tips' });
+
+    req.session.lastPage = "/";
 
     var query="SELECT uploadDate,productName,description,logoUrl,version FROM products ORDER BY uploadDate DESC limit 3 ";
     req.db.query(query, function(err, rows){
@@ -32,31 +35,31 @@ router.get('/about', function(req,res) {
     res.render('about');
 });
 
-router.post('/products',function(req,res,next) {
-    var p = parseInt(req.body.page);
+router.get('/products',function(req,res,next) {
+    var p = parseInt(req.query.page);
     var page = isNaN(p)? 1 : p;
     var name = undefined;
-    if(req.body.name) {
-        name = req.db.escape('%' + (req.body.name || "") + '%');
+    if(req.query.name) {
+        name = req.db.escape('%' + (req.query.name || "") + '%');
     }
     var tags = undefined;
-    if(req.body["tags[]"]) {
+    if(req.query["tags"]) {
         try {
-            if(Array.isArray(req.body["tags[]"])) {
-                tags = req.body["tags[]"].map(function (v) {
+            if(Array.isArray(req.query["tags"])) {
+                tags = req.query["tags"].map(function (v) {
                     return req.db.escape('%' + v + '%');
                 });
             } else {
-                tags = [req.db.escape('%' + req.body["tags[]"] + '%')];
+                tags = [req.db.escape('%' + req.query["tags"] + '%')];
             }
         } catch(e){
             console.log(e);
         }
     }
     var pageSize = 10;
-    if(req.body.limit){
-        if(!isNaN(req.body.limit)){
-            pageSize = parseInt(req.body.limit);
+    if(req.query.limit){
+        if(!isNaN(req.query.limit)){
+            pageSize = parseInt(req.query.limit);
         }
     }
 
@@ -87,9 +90,7 @@ router.post('/products',function(req,res,next) {
 
     query += ";";
 
-    var monthNames = ["January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ];
+
 
     req.db.query(query, function(err, rows) {
         if(err){
@@ -98,8 +99,9 @@ router.post('/products',function(req,res,next) {
 
             rows = rows.map(function (v) {
                 if (v.d) {
-                    var date = new Date(v.d);
-                    v.d = monthNames[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
+                    v.d = dateUtils.formatDate(v.d);
+                } else {
+                    v.d = "Unknown";
                 }
 
                 if (v.tags)
@@ -108,11 +110,13 @@ router.post('/products',function(req,res,next) {
                     v.tags = [];
                 return v;
             });
-            res.json({posts: rows, page: page, name: req.body.name, limit: pageSize});
+            res.json({posts: rows, page: page, name: req.query.name, limit: pageSize});
         }
 
     });
 });
+
+
 
 router.get('/search', function(req,res,next) {
     var query = "SELECT tag FROM tags";

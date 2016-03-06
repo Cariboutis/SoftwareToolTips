@@ -19,11 +19,12 @@ var login           = require('./routes/login');
 var users           = require('./routes/users');
 var userprofile     = require('./routes/userprofile');
 var product         = require('./routes/product');
+var review          = require('./routes/review');
 
 //Server constants
 const debugServer = "localhost";
 const prodServer = "seregil13.com";
-const SERVER = prodServer;
+const SERVER = debugServer;
 const GOOGLE_CLIENT_ID = "159196631200-d1cf3beikgm0km95rjnvierd952ig5kc.apps.googleusercontent.com";
 const GOOGLE_CLIENT_SECRET = "R_mG-IVJm5zYdENS42Hld4y2";
 
@@ -96,6 +97,7 @@ app.use('/', login);
 app.use('/users', users);
 app.use('/user', userprofile);
 app.use('/product', product);
+app.use('/review', review);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

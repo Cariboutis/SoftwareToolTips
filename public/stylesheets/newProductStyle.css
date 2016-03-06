@@ -31,3 +31,24 @@ div.error {
     color: #cd0a0a;
     padding-top: 3px;
 }
+
+#logo {
+    height:100px;
+    width:auto;
+}
+
+#editProductForm {
+    width: 80%;
+    float:left;
+}
+
+#controls {
+    width: 10%;
+    float: right;
+    text-align: center;
+}
+
+#controls button {
+    font-size: 1em;
+}
+

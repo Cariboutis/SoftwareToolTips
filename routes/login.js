@@ -21,12 +21,6 @@ router.get('/auth/google', passport.authenticate('google', { scope: [
     prompt: 'select_account'
 }));
 
-function addCommentIdsToSession(req){
-    if(!isNaN(req.session.user.userId)) {
-
-    }
-}
-
 // Google redirects user to this after token authenticated
 router.get('/auth/google/callback',
     passport.authenticate('google', { failureRedirect: '/login' }),
@@ -44,7 +38,6 @@ router.get('/auth/google/callback',
             } else {
                 req.session.isAuthenticated = true;
                 req.session.email = email;
-                req.session.commentedOn = [];
 
                 var user = rows[0];
             }
@@ -52,16 +45,11 @@ router.get('/auth/google/callback',
             if(user != undefined){
                 req.session.isLoggedIn = true;
                 req.session.user = user;
-                var select = "SELECT productId FROM comments WHERE userId = " + req.session.user.userId;
-                req.db.query(select, function(err, rows) {
-                    if(!err){
-                        req.session.commentedOn = rows.map(function(v){ return v.productId; });
-                        res.redirect('/');
-                    } else {
-                        res.statusCode = 500;
-                        res.redirect('error');
-                    }
-                });
+                if(req.session.lastPage) {
+                    res.redirect(req.session.lastPage);
+                } else {
+                    res.redirect('/');
+                }
 
             } else {
                 if (req.user.photos.length > 0) {

@@ -22,7 +22,7 @@ CREATE TABLE products
   productName varchar(255) NOT NULL,
   logoUrl varchar(255) NOT NULL,
   version varchar(63) NOT NULL,
-  lastUpdate DATE NOT NULL,
+  lastUpdate DATE,
   userId int NOT NULL,
   uploadDate DATETIME NOT NULL,
   description varchar(4000),
@@ -34,7 +34,6 @@ CREATE TABLE products
   PRIMARY KEY (productId),
   FOREIGN KEY (userId) REFERENCES users(userId)
 );
-
 
 CREATE TABLE comments
 (
@@ -49,8 +48,24 @@ CREATE TABLE comments
   compatibility int NOT NULL,
   documentation int NOT NULL,
   PRIMARY KEY (commentId),
-  FOREIGN KEY (productId) REFERENCES products(productId),
+  FOREIGN KEY (productId) REFERENCES products(productId) ON DELETE CASCADE ,
   FOREIGN KEY (userId) REFERENCES users(userId)
+);
+
+CREATE TABLE tags
+(
+    tagId int NOT NULL AUTO_INCREMENT,
+    tag varchar(25) NOT NULL UNIQUE,
+    PRIMARY KEY (tagId)
+);
+
+CREATE TABLE productTags
+(
+    productId int NOT NULL,
+    tagId int NOT NULL,
+    PRIMARY KEY (productId, tagId),
+    FOREIGN KEY (productId) REFERENCES products(productId) ON DELETE CASCADE,
+    FOREIGN KEY (tagId) REFERENCES tags(tagId)
 );
 
 INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, overallRate,learnability,easeOfUse,compatibility,documentation,description, uploadDate) VALUES ('MAMP','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','1.0','2015-10-01',1,1.3,5.6,9,3.4,7.5, 'MAMP installs a local server environment in a matter of seconds on your computer. It comes free of charge, and is easily installed. MAMP will not compromise any existing Apache installation already running on your system. You can install Apache, PHP and MySQL without starting a script or having to change any configuration files! Furthermore, if MAMP is no longer needed, just delete the MAMP folder and everything returns to its original state (i.e. MAMP does not modify any of the "normal" system).Similar to a Linux-Distribution, MAMP is a combination of free software and thus it is offered free of charge. MAMP is released under the GNU General Public License and may thereby be distributed freely within the boundaries of this license. Please note: some of the included software is released using a different license. In these cases, the corresponding license applies.','2013-11-13 02:30:30');
@@ -4293,40 +4308,27 @@ INSERT INTO comments (productId, userId, overallRate, learnability, easeOfUse, c
 INSERT INTO comments (productId, userId, overallRate, learnability, easeOfUse, compatibility, documentation, commentBody, commentTime) VALUES (200, 2, 2.4, 6.6, 9.8, 4.7, 1.8, 'No reward is worth this.', '2016-02-01 10:09:30');
 
 
-CREATE TABLE tags
-(
-    tagId int NOT NULL AUTO_INCREMENT,
-    tag varchar(25) NOT NULL UNIQUE,
-    PRIMARY KEY (tagId)
-);
-INSERT INTO tags (tag) VALUES ('Web Server');
-INSERT INTO tags (tag) VALUES ('JavaScript');
-INSERT INTO tags (tag) VALUES ('Java');
-INSERT INTO tags (tag) VALUES ('C');
-INSERT INTO tags (tag) VALUES ('PHP');
-INSERT INTO tags (tag) VALUES ('Web Framework');
-INSERT INTO tags (tag) VALUES ('JavaScript Framework');
-INSERT INTO tags (tag) VALUES ('Windows');
-INSERT INTO tags (tag) VALUES ('Linux');
-INSERT INTO tags (tag) VALUES ('OSX');
-INSERT INTO tags (tag) VALUES ('Android');
-INSERT INTO tags (tag) VALUES ('iOS');
-INSERT INTO tags (tag) VALUES ('Database');
-INSERT INTO tags (tag) VALUES ('Operating System');
-INSERT INTO tags (tag) VALUES ('Library');
-INSERT INTO tags (tag) VALUES ('Framework');
-INSERT INTO tags (tag) VALUES ('Python');
-INSERT INTO tags (tag) VALUES ('Cryptography');
-INSERT INTO tags (tag) VALUES ('Security');
+INSERT INTO tags (tag) VALUES ('web server');
+INSERT INTO tags (tag) VALUES ('javaScript');
+INSERT INTO tags (tag) VALUES ('java');
+INSERT INTO tags (tag) VALUES ('c');
+INSERT INTO tags (tag) VALUES ('php');
+INSERT INTO tags (tag) VALUES ('web framework');
+INSERT INTO tags (tag) VALUES ('javascript framework');
+INSERT INTO tags (tag) VALUES ('windows');
+INSERT INTO tags (tag) VALUES ('linux');
+INSERT INTO tags (tag) VALUES ('osx');
+INSERT INTO tags (tag) VALUES ('android');
+INSERT INTO tags (tag) VALUES ('ios');
+INSERT INTO tags (tag) VALUES ('database');
+INSERT INTO tags (tag) VALUES ('operating system');
+INSERT INTO tags (tag) VALUES ('library');
+INSERT INTO tags (tag) VALUES ('framework');
+INSERT INTO tags (tag) VALUES ('python');
+INSERT INTO tags (tag) VALUES ('cryptography');
+INSERT INTO tags (tag) VALUES ('security');
 
-CREATE TABLE productTags
-(
-    productId int NOT NULL,
-    tagId int NOT NULL,
-    PRIMARY KEY (productId, tagId),
-    FOREIGN KEY (productId) REFERENCES products(productId),
-    FOREIGN KEY (tagId) REFERENCES tags(tagId)
-);
+
 INSERT INTO productTags (productId, tagId) VALUES (1,1);
 INSERT INTO productTags (productId, tagId) VALUES (1,5);
 INSERT INTO productTags (productId, tagId) VALUES (1,6);

@@ -1,7 +1,7 @@
 var url = require('url');
 var mysql = require('mysql');
 var express = require('express');
-
+var dateUtils = require('../utils/dateutils');
 
 var router = express.Router();
 
@@ -9,114 +9,108 @@ router.get('/', function(req,res,next) {
     res.render('product');
 });
 
-var dateAddLeadingZero = function(n) {
-    return n < 10 ? '0' + n : n;
-};
 
-var today = function() {
-    var d = new Date();
-    var day = dateAddLeadingZero(d.getDate());
-    var month = dateAddLeadingZero(d.getMonth() + 1);
-    var year = d.getFullYear();
-
-    return year + '-' + month + '-' + day;
-};
 
 router.get('/New', function(req,res,next) {
     if (!req.session.isLoggedIn) {
+        req.session.lastPage = "/product/new";
         res.redirect('/Login');//, { message : "You need to be logged in to create a new product." });
     } else {
-        var now = today();
+        var now = dateUtils.today();
         res.render('newProduct', { today: now});
     }
 });
 
 router.post('/new', function (req, res, next) {
 
-    // TODO: Allow uploads rather than just links
+    if(req.session.isLoggedIn) {
+        // TODO: Allow uploads rather than just links
 
-    var productName = req.db.escape(req.body.productName);
-    var logoUrl = req.db.escape(req.body.logoUrl);
-    var versionNum = req.db.escape(req.body.versionNum);
-    var lastUpdate = req.db.escape(req.body.lastUpdate);
-    var description = req.db.escape(req.body.description);
-    var now = req.db.escape(today());
-    var tags = req.body.tags.split(",");
+        var productName = req.body.productName;
+        var logoUrl = req.body.logoUrl;
+        var versionNum = req.body.versionNum;
+        var lastUpdate = req.body.lastUpdate;
+        var description = req.body.description;
+        var now = dateUtils.today();
+        var tags = req.body.tags.split(",");
 
-    var d = new Date(lastUpdate);
-    lastUpdate = "'" + d.getFullYear() + "-" + dateAddLeadingZero(d.getMonth() + 1) + "-" + dateAddLeadingZero(d.getDate()) + "'";
-
-    var values = {
-        productName: productName,
-        logoUrl: logoUrl,
-        version: versionNum,
-        lastUpdate: lastUpdate,
-        userId: req.session.user.userId,
-        description: description,
-        uploadDate: now
-    };
-
-    // NOTE: This will only work in MySQL
-    var insert = "INSERT INTO products SET ?";
-
-    console.log(tags);
-
-
-    //var insert = "INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, description, uploadDate) VALUES ("
-    //    + productName + ',' + logoUrl + ',' + versionNum + ',' + lastUpdate + ',' + req.session.user.userId + ',' + description + ',' + now + ');';
-
-    //console.log("Inserting: " + mysql.format(insert, values));
-
-    var query = req.db.query(insert, values, function (err, rows) {
-        if (err) throw err; // TODO: Handle error gracefully
-
-        console.log(rows);
-
-        var productId = rows.insertId;
-
-        if (tags.length < 1) return;
-
-        var insertTags = "INSERT IGNORE INTO tags (tag) VALUES ";
-        for (var i = 0; i < tags.length - 1; ++i) {
-            insertTags += "(" + req.db.escape(tags[i]) + "),";
+        if(lastUpdate && lastUpdate != "") {
+            var d = new Date(lastUpdate);
+            lastUpdate = "'" + d.getFullYear() + "-" + dateUtils.dateAddLeadingZero(d.getMonth() + 1) + "-" + dateUtils.dateAddLeadingZero(d.getDate()) + "'";
+        } else {
+            lastUpdate = null;
         }
 
-        insertTags += "(" + req.db.escape(tags[tags.length-1]) + ")";
+        var values = {
+            productName: productName,
+            logoUrl: logoUrl,
+            version: versionNum,
+            lastUpdate: lastUpdate,
+            userId: req.session.user.userId,
+            description: description,
+            uploadDate: now
+        };
 
-        console.log("Inserting: " + mysql.format(insertTags, [tags]));
+        // NOTE: This will only work in MySQL
+        var insert = "INSERT INTO products SET ?";
 
-        req.db.query(insertTags, function(err, rows) {
+        console.log(tags);
+
+        req.db.query(insert, values, function (err, rows) {
             if (err) throw err; // TODO: Handle error gracefully
 
             console.log(rows);
 
-            var insertProductTags = "INSERT INTO productTags VALUES";
+            var productId = rows.insertId;
 
+            if (tags.length < 1) return;
+
+            var insertTags = "INSERT IGNORE INTO tags (tag) VALUES ";
             for (var i = 0; i < tags.length - 1; ++i) {
-                insertProductTags += "(" + req.db.escape(productId) + ", (SELECT tagId FROM tags where tag=" + req.db.escape(tags[i]) + ")),";
+                insertTags += "(" + req.db.escape(tags[i]) + "),";
             }
 
-            insertProductTags += "(" + req.db.escape(productId) + ", (SELECT tagId FROM tags where tag=" + req.db.escape(tags[tags.length - 1]) + "))";
+            insertTags += "(" + req.db.escape(tags[tags.length - 1]) + ")";
 
-            console.log(insertProductTags);
+            console.log("Inserting: " + mysql.format(insertTags, [tags]));
 
-            req.db.query(insertProductTags, function(err, rows) {
+            req.db.query(insertTags, function (err, rows) {
                 if (err) throw err; // TODO: Handle error gracefully
 
                 console.log(rows);
+
+                var insertProductTags = "INSERT INTO productTags VALUES";
+
+                for (var i = 0; i < tags.length - 1; ++i) {
+                    insertProductTags += "(" + req.db.escape(productId) + ", (SELECT tagId FROM tags where tag=" + req.db.escape(tags[i]) + ")),";
+                }
+
+                insertProductTags += "(" + req.db.escape(productId) + ", (SELECT tagId FROM tags where tag=" + req.db.escape(tags[tags.length - 1]) + "))";
+
+                console.log(insertProductTags);
+
+                req.db.query(insertProductTags, function (err, rows) {
+                    if (err) throw err; // TODO: Handle error gracefully
+
+                    console.log(rows);
+                    res.redirect('/product/' + productName + '/' + versionNum);
+                })
+
             })
+        });
 
-        })
-    });
-
-    res.redirect('/');
+    } else {
+        next("Why are you posting to this page?");
+    }
 });
 
 
 router.get('/:pname', function(req,res,next) {
+    req.session.lastPage = '/product/' + req.params.pname;
 
     var productName = req.db.escape(req.params.pname);
     var selectPQ = "SELECT version FROM products WHERE productName = " + productName;
+
 
     req.db.query(selectPQ,  function(err, rows) {
         if(err){
@@ -129,6 +123,8 @@ router.get('/:pname', function(req,res,next) {
 });
 
 router.get('/:pname/stats', function(req,res,next) {
+
+    req.session.lastPage = '/product/' + req.params.pname + '/stats';
 
     var version = url.parse(req.url, true).query.version || "";
     var pname = req.db.escape(req.params.pname);
@@ -175,111 +171,234 @@ router.get('/:pname/statData', function(req,res,next) {
 
 router.get('/:pname/:vnum', function(req,res,next) {
 
+    req.session.lastPage = '/product/' + req.params.pname + "/" + req.params.vnum;
+
     var pname =  req.db.escape(req.params.pname);
     var vnum = req.db.escape(req.params.vnum);
-    var query = "SELECT * FROM products WHERE productName = " + pname + " AND version = " + vnum + "";
+    //var query = "SELECT * FROM products WHERE productName = " + pname + " AND version = " + vnum + "";
+
+    var query = "SELECT productName, description, version, overallRate, documentation, compatibility, easeOfUse, learnability, logoUrl, p.productId, uploadDate, userId, lastUpdate, GROUP_CONCAT(t.tag) as tags " +
+    " FROM products p" +
+    " LEFT JOIN productTags pt" +
+    " ON p.productId = pt.productId" +
+    " LEFT JOIN tags t" +
+    " ON pt.tagId = t.tagId" +
+    " WHERE productName = " + pname +
+    " AND version = " + vnum +
+    " GROUP BY p.productId";
 
     var productQuery = req.db.query(query,  function(err, rows) {
-        if(err) throw err;
+        if(err) {
+            next(err);
+        }else {
 
-        if(rows.length == 0){
-            next();
-        } else {
+            if (rows.length == 0) {
+                next();
+            } else {
 
-            var product = rows[0];
-            var hasCommented = false;
-            if(req.session.isLoggedIn){
-                hasCommented = (req.session.commentedOn.indexOf(product.productId) > -1);
+                var product = rows[0];
+                var hasCommented = false;
+                if (req.session.isLoggedIn) {
+                    if (req.session.commentedOn) {
+                        hasCommented = (req.session.commentedOn.indexOf(product.productId) > -1);
+                        res.render('product', {product: product, hasCommented: hasCommented});
+                    } else {
+                        //Add all product IDs the user has commented on to session.
+                        var select = "SELECT productId FROM comments WHERE userId = " + req.session.user.userId;
+                        req.db.query(select, function (err, rows) {
+                            if (!err) {
+                                req.session.commentedOn = rows.map(function (v) {
+                                    return v.productId;
+                                });
+                                hasCommented = (req.session.commentedOn.indexOf(product.productId) > -1);
+                                res.render('product', {product: product, hasCommented: hasCommented});
+                            } else {
+                                res.statusCode = 500;
+                                next(err);
+                            }
+                        });
+                    }
+                } else {
+                    res.render('product', {product: product, hasCommented: hasCommented});
+                }
+
+
             }
-
-            res.render('product', { product: product, hasCommented:hasCommented });
         }
     });
 
 });
 
-router.post('/:productId/comments', function(req,res,next) {
-    var pId = req.params.productId;
-    var off = req.body.offset;
-    if(!isNaN(pId) && (!isNaN(off) || off == undefined )){
-        var pageSize = 5;
+router.get('/:pname/:vnum/edit', function(req,res,next) {
+    req.session.lastPage = "/product/" + req.params.pname + "/" + req.params.vnum + "/edit";
+    if(req.session.isLoggedIn){
+        var pname =  req.db.escape(req.params.pname);
+        var vnum = req.db.escape(req.params.vnum);
+        //var query = "SELECT * FROM products WHERE productName = " + pname + " AND version = " + vnum + "";
 
-        var id = parseInt(pId);
-        var query = "SELECT commentBody, commentTime, compatibility, documentation, easeOfUse, learnability, overallRate, username FROM comments c INNER JOIN users u ON c.userId = u.userId WHERE productId = " + id + " ORDER BY commentTime DESC LIMIT " + pageSize;
-        if(off){
-            var offset = parseInt(off);
-            query += " OFFSET " + offset;
+        var query = "SELECT productName, description, version, overallRate, documentation, compatibility, easeOfUse, learnability, logoUrl, p.productId, uploadDate, userId, lastUpdate, GROUP_CONCAT(t.tag) as tags " +
+            " FROM products p" +
+            " LEFT JOIN productTags pt" +
+            " ON p.productId = pt.productId" +
+            " LEFT JOIN tags t" +
+            " ON pt.tagId = t.tagId" +
+            " WHERE productName = " + pname +
+            " AND version = " + vnum +
+            " GROUP BY p.productId";
+
+        var productQuery = req.db.query(query,  function(err, rows) {
+            if (err) {
+                next(err);
+            } else {
+                var p = rows[0];
+                if(p.userId != req.session.user.userId){
+                    next("You do not have permissions to edit this product.");
+                } else {
+                    if(!p.lastUpdate) p.lastUpdate = "";
+                    res.render('editProduct', {product:p});
+                }
+            }
+        });
+
+    } else {
+        res.redirect('/login');
+    }
+
+});
+
+
+router.post('/:pname/:vnum/edit', function (req, res, next) {
+
+    if(req.session.isLoggedIn) {
+
+        var pId = req.body.productId;
+
+        if(!isNaN(pId)) {
+
+            var productName = req.params.pname;
+            var versionNum = req.params.vnum;
+            var logoUrl = req.body.logoUrl;
+            var lastUpdate = req.body.lastUpdate;
+            var description = req.body.description;
+            var tags = req.body.tags.split(",");
+
+            var d = new Date(lastUpdate);
+            lastUpdate = "'" + d.getFullYear() + "-" + dateUtils.dateAddLeadingZero(d.getMonth() + 1) + "-" + dateUtils.dateAddLeadingZero(d.getDate()) + "'";
+
+            var values = {
+                logoUrl: logoUrl,
+                lastUpdate: lastUpdate,
+                description: description
+            };
+
+            var insert = "UPDATE products SET ? WHERE productId = " + pId;
+
+            req.db.query(insert, values, function (err, rows) {
+                if (err) {
+                    next(err);
+                } else {
+
+                    console.log(rows);
+
+                    var productId = rows.insertId;
+
+                    if (tags.length < 1) return;
+
+                    var insertTags = "INSERT IGNORE INTO tags (tag) VALUES ";
+                    for (var i = 0; i < tags.length - 1; ++i) {
+                        insertTags += "(" + req.db.escape(tags[i]) + "),";
+                    }
+
+                    insertTags += "(" + req.db.escape(tags[tags.length - 1]) + ")";
+
+                    console.log("Inserting: " + mysql.format(insertTags, [tags]));
+
+                    req.db.query(insertTags, function (err, rows) {
+                        if (err) {
+                            next(err);
+                        } else {
+
+                            var insertProductTags = "INSERT IGNORE INTO productTags VALUES";
+
+                            for (var i = 0; i < tags.length - 1; ++i) {
+                                insertProductTags += "(" + pId + ", (SELECT tagId FROM tags where tag=" + req.db.escape(tags[i]) + ")),";
+                            }
+
+                            insertProductTags += "(" + pId + ", (SELECT tagId FROM tags where tag=" + req.db.escape(tags[tags.length - 1]) + "))";
+
+                            console.log(insertProductTags);
+
+                            req.db.query(insertProductTags, function (err, rows) {
+                                if (err) {
+                                    next(err);
+                                } else {
+                                    var deleteProductTags = "DELETE FROM productTags WHERE productId = " + pId + " AND tagId NOT IN (SELECT tagId FROM tags WHERE tag IN (" + tags.map(function(v) {
+                                            return req.db.escape(v);
+                                        }).reduce(function(p,c,i,a) {
+                                                return p + ',' + c;
+                                        }) + "))";
+
+                                    req.db.query(deleteProductTags, function (err, rows) {
+                                        if (err) {
+                                            next(err);
+                                        } else {
+                                            res.redirect('/product/' + productName + '/' + versionNum);
+                                        }
+                                    });
+                                }
+
+
+                            })
+                        }
+
+                    })
+                }
+            });
+        } else {
+            next("Product ID is not a number");
         }
 
-        req.db.query(query,  function(err, rows) {
-            if(err) {
-                next(err);
-            } else {
-                res.json(rows);
-            }
-        });
+    } else {
+        next("Why are you posting to this page?");
     }
-
 });
 
-function isValid(req, pId){
-    if(isNaN(req.body.overall) || isNaN(req.body.compatibility) || isNaN(req.body.easeOfUse)
-        || isNaN(req.body.documentation) || isNaN(req.body.learnability)
-        || (req.body.body == undefined) || (!req.session.isLoggedIn)
-        || (req.session.user == undefined) || isNaN(pId)){
-        return false;
-    } else {
-        return true;
-    }
-}
+router.delete('/:pname/:vnum', function (req, res, next) {
 
-router.post('/:productId/comment', function(req,res,next) {
-    var pId = req.params.productId;
-    if(isValid(req, pId)) {
-        var now = today();
-        var values = {
-            commentBody : req.body.body,
-            overallRate : parseInt(req.body.overall),
-            compatibility : parseInt(req.body.compatibility),
-            easeOfUse : parseInt(req.body.easeOfUse),
-            documentation : parseInt(req.body.documentation),
-            learnability : parseInt(req.body.learnability),
-            productId : parseInt(pId),
-            userId : req.session.user.userId,
-            commentTime: now
-        };
+    if (req.session.isLoggedIn) {
 
-        // NOTE: This will only work in MySQL
-        var insert = "INSERT INTO comments SET ?";
+        var productName = req.params.pname;
+        var version = req.params.vnum;
 
-        // NOTE: inserting values this way escapes all non-number values
-        req.db.query(insert, values, function(err, rows) {
+        var query = "SELECT * FROM products WHERE productName = " + req.db.escape(productName) + " AND version = " + req.db.escape(version);
+
+        req.db.query(query, function(err,rows) {
             if(err) {
-                next(err);
+                res.json({success:false,err:err.message});
             } else {
+                var prod = rows[0];
+                if(prod.userId != req.session.user.userId){
+                    res.json({success:false,err:"You do not have permissions to delete this product."});
+                } else {
 
-                var commentId = rows.insertId;
 
-                var query = "SELECT commentBody, commentTime, compatibility, documentation, easeOfUse, learnability, overallRate FROM comments c WHERE commentId = " + commentId + " ORDER BY commentTime LIMIT 1";
-
-                req.db.query(query, function(err, rows) {
-                    if(err) {
-                        next(err);
-                    } else {
-                        var comment = rows[0];
-                        comment.username = req.session.user.username;
-                        req.session.commentedOn.push(parseInt(pId));
-                        res.json(rows[0]);
-                    }
-                });
+                    var deleteQuery = "DELETE FROM products WHERE productName = " + req.db.escape(productName) + " AND version = " + req.db.escape(version);
+                    req.db.query(deleteQuery,function(err,rows) {
+                        if (err) {
+                            res.json({success: false, err: err.message});
+                        } else {
+                            res.json({success:true,err:null});
+                        }
+                    });
+                }
             }
-        });
+        })
+
     } else {
-        next("Invalid data submitted");
+        res.json({success:false,err:"You are not logged in."});
     }
-
-
 });
+
 
 module.exports = router;
 

@@ -126,3 +126,18 @@ p {
     overflow: auto;
     clear: both;
 }
+
+.highlight-btn {
+    background-color: #4C8CA8;
+    color: white;
+}
+
+.deleteButton {
+    background-color: #d12727;
+    margin-top: 1em;
+    height: 2em;
+    color: #ededed;
+    border: none;
+    float: right;
+    width: 2em;
+}

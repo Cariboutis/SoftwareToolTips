@@ -33,6 +33,11 @@ tr {
     font-size: 14px;
 }
 
+.tag:hover {
+    cursor:pointer;
+    background-color: #84bce3;
+}
+
 .row {
     overflow: hidden;
     padding:10px;
@@ -144,6 +149,11 @@ button {
 }
 #Back {
     display: none;
+}
+
+#backArea {
+    width: 4em;
+    display: inline-block;
 }
 
 .header {

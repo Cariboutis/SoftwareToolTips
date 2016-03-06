@@ -1,0 +1,88 @@
+// Created by Alec on 1/28/2016.
+
+extends layout
+
+block headStyles
+    link(rel='stylesheet', href='/stylesheets/newProductStyle.css')
+    link(rel='stylesheet', href='/stylesheets/jquery.tagit.css')
+    link(rel='stylesheet', href='/stylesheets/tagit.ui-zendesk.css')
+
+block headScripts
+    script(src='/js/jquery.validate.min.js')
+    script(src='/js/jquery-ui.min.js')
+    script(src='/js/newProductValidation.js')
+    script(src='/js/tag-it.min.js')
+
+block content
+
+    h1 Edit Product
+    form(id="editProductForm", name="editProductForm", method="post")
+        .form-table
+            input(type="hidden", id="productId", name="productId", value= product.productId)
+            .form-row
+                .form-cell-label
+                    label Name
+                .form-cell-input
+                    label= product.productName
+            .form-row
+                .form-cell-label
+                    label Version Number
+                .form-cell-input
+                    label= product.version
+            .form-row
+                .form-cell-label
+                    label(for="logoUrl") Logo
+                .form-cell-input
+                    input(type="url", id="logoUrl", name="logoUrl", value="#{product.logoUrl}")
+
+            img(src="#{product.logoUrl}")#logo
+            .form-row
+                .form-cell-label
+                    label(for="lastUpdate") Last Update
+                .form-cell-input
+                    input(type="text", id="lastUpdate", name="lastUpdate", value="#{product.lastUpdate}")
+            .form-row
+                .form-cell-label
+                    label(for="description") Description
+                .form-cell-input
+                    textarea(form="editProductForm", name="description", id="description", rows="5")= product.description
+            .form-row
+                .form-cell-label
+                    label(for="tags") Tags
+                .form-cell-input
+                    input(type="text", name="tags", id="tags", value="#{product.tags}")
+            .form-row
+                .form-cell
+                    input(type="submit", value="Submit", class="submit-btn", id="submit")
+
+    #controls
+        button.btn.deleteButton#delete X
+
+    script.
+
+        function deleteProduct(event) {
+            if (confirm("Are you sure you want to delete this product?")) {
+                $.ajax({
+                    type: "DELETE",
+                    url: "/product/#{product.productName}/#{product.version}",
+                    success: function (result) {
+                        if (result.success) {
+                            window.location = "/";
+                        } else {
+                            alert(result.err);
+                        }
+                    },
+                    error: function (res, p1, p2) {
+                        console.log("error:" + res);
+                    }
+                });
+            }
+        }
+
+        $(document).ready(function(){
+           $("#logoUrl").change(function(event){
+               var src = $(this).val();
+               $("#logo").attr('src',src);
+           });
+            $("#delete").click(deleteProduct)
+        });
