@@ -4387,5 +4387,27 @@ BEGIN
 
 END
 $$
+/* Daniel-Commenting out for now.
+DROP PROCEDURE IF EXISTS usp_softUpdateProductStats$$
+CREATE PROCEDURE usp_softUpdateProductStats(IN pId INT, IN ovR double, IN leA double, IN eOU double, IN coM double, IN doC double)
+BEGIN
+    DECLARE TR INT;
+    DECLARE OovR double;
+    DECLARE OleA double;
+    DECLARE OeOU double;
+    DECLARE OcoM double;
+    DECLARE OdoC double;
+    SELECT TR=totalReviews,OovR=overallRate,OleA=learnability,OeOU=easeOfUse,OcoM=compatibility,OdoC=documentation FROM products WHERE productId = pId;
+    
+    UPDATE products
+    SET overallRate = (((OovR * TR)/(TR + 1)) + (ovR/TR)),
+        learnability = (((OleA * TR)/(TR + 1)) + (leA/TR)),
+        easeOfUse = (((OeOU * TR)/(TR + 1)) + (eOU/TR)),
+        compatibility = (((OcoM * TR)/(TR + 1)) + (coM/TR)),
+        documentation = (((OdoC * TR)/(TR + 1)) + (doC/TR))
+    WHERE productId = pId;
 
+END
+$$
+*/
 DELIMITER ;
