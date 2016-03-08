@@ -102,7 +102,7 @@ block content
             row.append(version);
 
             var rating = $(document.createElement('div')).attr('class','row-item row-rating');
-            rating.text(post.o || "No Rating")
+            rating.text(post.o.toFixed(1) || "No Rating")
 
             row.append(rating);
 
