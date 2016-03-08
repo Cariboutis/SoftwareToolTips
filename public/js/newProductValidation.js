@@ -17,7 +17,8 @@ $().ready(function() {
         rules: {
             productName: {
                 required: true,
-                minlength: 2
+                minlength: 2,
+                invalidChars: ["/"]
             },
             logoUrl: {
                 url: true,
@@ -37,7 +38,8 @@ $().ready(function() {
         messages: {
             productName: {
                 required: "Please enter a product name",
-                minlength: "The product name must be at least 2 characters"
+                minlength: "The product name must be at least 2 characters",
+                invalidChars: "The product name cannot contain a '/'"
             },
             versionNum: {
                 required: "Please enter a version number",
@@ -87,3 +89,14 @@ $.validator.addMethod("numberOfTags", function(value, element, params) {
     return this.optional(element) || value.split(",").length > minimum;
 
 }, "Please enter at least one tag");
+
+$.validator.addMethod("invalidChars", function(value, element, params) {
+
+    for (var i = 0; i < params.length; ++i) {
+        if (value.indexOf(params[0]) != -1) {
+            return false;
+        }
+    }
+
+    return true;
+}, "An invalid character has been entered");
