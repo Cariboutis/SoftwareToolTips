@@ -28,22 +28,10 @@ $().ready(function() {
                 versionNum: true
             },
             lastUpdate: {
-                dateRange: {
-                    dateBefore: function() {
-                        var d = new Date();
-                        var day = dateAddLeadingZero(d.getDate());
-                        var month = dateAddLeadingZero(d.getMonth() + 1);
-                        var year = d.getFullYear();
-
-                        return year + '-' + month + '-' + day;
-                    },
-                    dateAfter: "1970-01-01"
-                }
+                dateRange: {}
             },
             tags: {
-                numberOfTags: {
-                    minimum: 1
-                }
+                require: true
             }
         },
         messages: {
@@ -57,6 +45,9 @@ $().ready(function() {
             },
             lastUpdate: {
                 dateRange: "Please enter a date between Jan 1, 1970 and today"
+            },
+            tags: {
+                required: "Please enter at least one tag"
             }
         }
     });
