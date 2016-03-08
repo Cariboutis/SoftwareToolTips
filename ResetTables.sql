@@ -122,7 +122,8 @@ BEGIN
                 learnability = (SELECT AVG(learnability) FROM comments WHERE productId = pId),
                 easeOfUse = (SELECT AVG(easeOfUse) FROM comments WHERE productId = pId),
                 compatibility = (SELECT AVG(compatibility) FROM comments WHERE productId = pId),
-                documentation = (SELECT AVG(documentation) FROM comments WHERE productId = pId)
+                documentation = (SELECT AVG(documentation) FROM comments WHERE productId = pId),
+                totalReviews = (SELECT COUNT(commentId) FROM comments WHERE productId = pId)
             WHERE productId = pId;
 
         SET i = i + 1;
