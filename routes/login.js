@@ -98,7 +98,11 @@ router.post('/createUser', function(req,res) {
                 if (err) throw err; // TODO: Handle error gracefully
                 req.session.isLoggedIn = true;
                 req.session.user = rows[0];
-                res.redirect('/');
+                if (req.session.lastPage) {
+                    res.redirect(req.session.lastPage);
+                } else {
+                    res.redirect('/');
+                }
             });
 
             console.log("Inserted: " + JSON.stringify(result));

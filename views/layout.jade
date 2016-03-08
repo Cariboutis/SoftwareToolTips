@@ -21,15 +21,11 @@ html
                     .navbar-header
                         a.navbar-brand(href="/") Software Tool Tips
                     ul.topnav
-                        li
-                            a(href="/About") About
-                        li
-                            a(href="#") Contact
                         ul.topnav.right
                             li
                                 a(href="/Search") Search
                             li
-                                a(href="/Product/New") New Post
+                                a(href="/Product/New") New Product
                             if(session && session.isLoggedIn)
                                 li
                                     a(href="/user/" + session.user.userId) #{session.user.username}
