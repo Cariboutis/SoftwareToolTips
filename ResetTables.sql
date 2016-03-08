@@ -26,11 +26,12 @@ CREATE TABLE products
   userId int NOT NULL,
   uploadDate DATETIME NOT NULL,
   description varchar(4000),
-  overallRate double,
-  learnability double,
-  easeOfUse double,
-  compatibility double,
-  documentation double,
+  overallRate double NOT NULL DEFAULT 0,
+  learnability double NOT NULL DEFAULT 0,
+  easeOfUse double NOT NULL DEFAULT 0,
+  compatibility double NOT NULL DEFAULT 0,
+  documentation double NOT NULL DEFAULT 0,
+  totalReviews int NOT NULL DEFAULT 0,
   PRIMARY KEY (productId),
   FOREIGN KEY (userId) REFERENCES users(userId)
 );
@@ -67,6 +68,104 @@ CREATE TABLE productTags
     FOREIGN KEY (productId) REFERENCES products(productId) ON DELETE CASCADE,
     FOREIGN KEY (tagId) REFERENCES tags(tagId)
 );
+
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS usp_insertTestData$$
+CREATE PROCEDURE usp_insertTestData()
+BEGIN
+    DECLARE vcnt INT;
+    DECLARE vtotal INT;
+
+    SET vcnt = 0;
+    SET vtotal = 1000;
+
+    WHILE vcnt < vtotal DO
+        INSERT INTO comments (commentBody, commentTime, productId, userId,overallRate,learnability,easeOfUse,compatibility,documentation) VALUES ('',NOW(),1,2, FLOOR(RAND() * 11), FLOOR(RAND() * 11), FLOOR(RAND() * 11), FLOOR(RAND() * 11), FLOOR(RAND() * 11) );
+        set vcnt = vcnt + 1;
+    END WHILE;
+
+    SET vcnt = 0;
+    SET vtotal = 1000;
+
+    WHILE vcnt < vtotal DO
+        INSERT INTO comments (commentBody, commentTime, productId, userId,overallRate,learnability,easeOfUse,compatibility,documentation) VALUES ('',NOW(),2,2, FLOOR(RAND() * 11), FLOOR(RAND() * 11), FLOOR(RAND() * 11), FLOOR(RAND() * 11), FLOOR(RAND() * 11) );
+        set vcnt = vcnt + 1;
+    END WHILE;
+
+    SET vcnt = 0;
+    SET vtotal = 1000;
+
+    WHILE vcnt < vtotal DO
+        INSERT INTO comments (commentBody, commentTime, productId, userId,overallRate,learnability,easeOfUse,compatibility,documentation) VALUES ('',NOW(),3,2, FLOOR(RAND() * 11), FLOOR(RAND() * 11), FLOOR(RAND() * 11), FLOOR(RAND() * 11), FLOOR(RAND() * 11) );
+        set vcnt = vcnt + 1;
+    END WHILE;
+END
+$$
+
+
+DROP PROCEDURE IF EXISTS usp_updateProductStats$$
+CREATE PROCEDURE usp_updateProductStats(IN pId INT)
+BEGIN
+
+    UPDATE products
+    SET overallRate = (SELECT AVG(overallRate) FROM comments WHERE productId = pId),
+        learnability = (SELECT AVG(learnability) FROM comments WHERE productId = pId),
+        easeOfUse = (SELECT AVG(easeOfUse) FROM comments WHERE productId = pId),
+        compatibility = (SELECT AVG(compatibility) FROM comments WHERE productId = pId),
+        documentation = (SELECT AVG(documentation) FROM comments WHERE productId = pId)
+    WHERE productId = pId;
+
+END
+$$
+
+DROP PROCEDURE IF EXISTS usp_softUpdateProductStats$$
+CREATE PROCEDURE usp_softUpdateProductStats(IN pId INT, IN ovR double, IN leA double, IN eOU double, IN coM double, IN doC double)
+BEGIN
+    DECLARE TR INT;
+    DECLARE OovR double;
+    DECLARE OleA double;
+    DECLARE OeOU double;
+    DECLARE OcoM double;
+    DECLARE OdoC double;
+    SELECT totalReviews,overallRate,learnability,easeOfUse,compatibility,documentation INTO TR,OovR, OleA, OeOU, OcoM, OdoC FROM products WHERE productId = pId;
+
+    UPDATE products
+    SET overallRate = (((OovR * TR)/(TR + 1)) + (ovR/(TR + 1))),
+        learnability = (((OleA * TR)/(TR + 1)) + (leA/(TR + 1))),
+        easeOfUse = (((OeOU * TR)/(TR + 1)) + (eOU/(TR + 1))),
+        compatibility = (((OcoM * TR)/(TR + 1)) + (coM/(TR + 1))),
+        documentation = (((OdoC * TR)/(TR + 1)) + (doC/(TR + 1))),
+        totalReviews = TR + 1
+    WHERE productId = pId;
+
+END
+$$
+
+DROP PROCEDURE IF EXISTS usp_softRemoveUpdateProductStats$$
+CREATE PROCEDURE usp_softRemoveUpdateProductStats(IN pId INT, IN ovR double, IN leA double, IN eOU double, IN coM double, IN doC double)
+BEGIN
+    DECLARE TR INT;
+    DECLARE OovR double;
+    DECLARE OleA double;
+    DECLARE OeOU double;
+    DECLARE OcoM double;
+    DECLARE OdoC double;
+    SELECT totalReviews,overallRate,learnability,easeOfUse,compatibility,documentation INTO TR,OovR, OleA, OeOU, OcoM, OdoC FROM products WHERE productId = pId;
+
+    UPDATE products
+    SET overallRate = (((OovR * TR)/(TR - 1)) - (ovR/(TR - 1))),
+        learnability = (((OleA * TR)/(TR - 1)) - (leA/(TR - 1))),
+        easeOfUse = (((OeOU * TR)/(TR - 1)) - (eOU/(TR - 1))),
+        compatibility = (((OcoM * TR)/(TR - 1)) - (coM/(TR - 1))),
+        documentation = (((OdoC * TR)/(TR - 1)) - (doC/(TR - 1))),
+        totalReviews = TR - 1
+    WHERE productId = pId;
+
+END
+$$
+
+DELIMITER ;
 
 INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, overallRate,learnability,easeOfUse,compatibility,documentation,description, uploadDate) VALUES ('MAMP','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','1.0','2015-10-01',1,1.3,5.6,9,3.4,7.5, 'MAMP installs a local server environment in a matter of seconds on your computer. It comes free of charge, and is easily installed. MAMP will not compromise any existing Apache installation already running on your system. You can install Apache, PHP and MySQL without starting a script or having to change any configuration files! Furthermore, if MAMP is no longer needed, just delete the MAMP folder and everything returns to its original state (i.e. MAMP does not modify any of the "normal" system).Similar to a Linux-Distribution, MAMP is a combination of free software and thus it is offered free of charge. MAMP is released under the GNU General Public License and may thereby be distributed freely within the boundaries of this license. Please note: some of the included software is released using a different license. In these cases, the corresponding license applies.','2013-11-13 02:30:30');
 INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, overallRate,learnability,easeOfUse,compatibility,documentation,description, uploadDate) VALUES ('MAMP','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','2.0','2015-10-01',1,1.3,5.6,9,3.4,7.5, 'MAMP installs a local server environment in a matter of seconds on your computer. It comes free of charge, and is easily installed. MAMP will not compromise any existing Apache installation already running on your system. You can install Apache, PHP and MySQL without starting a script or having to change any configuration files! Furthermore, if MAMP is no longer needed, just delete the MAMP folder and everything returns to its original state (i.e. MAMP does not modify any of the "normal" system).Similar to a Linux-Distribution, MAMP is a combination of free software and thus it is offered free of charge. MAMP is released under the GNU General Public License and may thereby be distributed freely within the boundaries of this license. Please note: some of the included software is released using a different license. In these cases, the corresponding license applies.','2014-11-13 02:30:30');
@@ -4339,75 +4438,3 @@ INSERT INTO productTags (productId, tagId) VALUES (3,1);
 INSERT INTO productTags (productId, tagId) VALUES (3,5);
 INSERT INTO productTags (productId, tagId) VALUES (3,6);
 
-DELIMITER $$
-DROP PROCEDURE IF EXISTS usp_insertTestData$$
-CREATE PROCEDURE usp_insertTestData()
-BEGIN
-    DECLARE vcnt INT;
-    DECLARE vtotal INT;
-
-    SET vcnt = 0;
-    SET vtotal = 1000;
-
-    WHILE vcnt < vtotal DO
-        INSERT INTO comments (commentBody, commentTime, productId, userId,overallRate,learnability,easeOfUse,compatibility,documentation) VALUES ('',NOW(),1,2, FLOOR(RAND() * 11), FLOOR(RAND() * 11), FLOOR(RAND() * 11), FLOOR(RAND() * 11), FLOOR(RAND() * 11) );
-        set vcnt = vcnt + 1;
-    END WHILE;
-
-    SET vcnt = 0;
-    SET vtotal = 1000;
-
-    WHILE vcnt < vtotal DO
-        INSERT INTO comments (commentBody, commentTime, productId, userId,overallRate,learnability,easeOfUse,compatibility,documentation) VALUES ('',NOW(),2,2, FLOOR(RAND() * 11), FLOOR(RAND() * 11), FLOOR(RAND() * 11), FLOOR(RAND() * 11), FLOOR(RAND() * 11) );
-        set vcnt = vcnt + 1;
-    END WHILE;
-
-    SET vcnt = 0;
-    SET vtotal = 1000;
-
-    WHILE vcnt < vtotal DO
-        INSERT INTO comments (commentBody, commentTime, productId, userId,overallRate,learnability,easeOfUse,compatibility,documentation) VALUES ('',NOW(),3,2, FLOOR(RAND() * 11), FLOOR(RAND() * 11), FLOOR(RAND() * 11), FLOOR(RAND() * 11), FLOOR(RAND() * 11) );
-        set vcnt = vcnt + 1;
-    END WHILE;
-END
-$$
-
-
-DROP PROCEDURE IF EXISTS usp_updateProductStats$$
-CREATE PROCEDURE usp_updateProductStats(IN pId INT)
-BEGIN
-
-    UPDATE products
-    SET overallRate = (SELECT AVG(overallRate) FROM comments WHERE productId = pId),
-        learnability = (SELECT AVG(learnability) FROM comments WHERE productId = pId),
-        easeOfUse = (SELECT AVG(easeOfUse) FROM comments WHERE productId = pId),
-        compatibility = (SELECT AVG(compatibility) FROM comments WHERE productId = pId),
-        documentation = (SELECT AVG(documentation) FROM comments WHERE productId = pId)
-    WHERE productId = pId;
-
-END
-$$
-/* Daniel-Commenting out for now.
-DROP PROCEDURE IF EXISTS usp_softUpdateProductStats$$
-CREATE PROCEDURE usp_softUpdateProductStats(IN pId INT, IN ovR double, IN leA double, IN eOU double, IN coM double, IN doC double)
-BEGIN
-    DECLARE TR INT;
-    DECLARE OovR double;
-    DECLARE OleA double;
-    DECLARE OeOU double;
-    DECLARE OcoM double;
-    DECLARE OdoC double;
-    SELECT TR=totalReviews,OovR=overallRate,OleA=learnability,OeOU=easeOfUse,OcoM=compatibility,OdoC=documentation FROM products WHERE productId = pId;
-    
-    UPDATE products
-    SET overallRate = (((OovR * TR)/(TR + 1)) + (ovR/TR)),
-        learnability = (((OleA * TR)/(TR + 1)) + (leA/TR)),
-        easeOfUse = (((OeOU * TR)/(TR + 1)) + (eOU/TR)),
-        compatibility = (((OcoM * TR)/(TR + 1)) + (coM/TR)),
-        documentation = (((OdoC * TR)/(TR + 1)) + (doC/TR))
-    WHERE productId = pId;
-
-END
-$$
-*/
-DELIMITER ;

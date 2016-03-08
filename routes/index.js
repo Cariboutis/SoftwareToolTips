@@ -2,6 +2,7 @@ var express = require('express');
 var paginate = require('express-paginate');
 var url = require('url');
 var dateUtils = require('../utils/dateutils');
+var utils = require('../utils/utils');
 
 var router = express.Router();
 

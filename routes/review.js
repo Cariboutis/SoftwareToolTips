@@ -1,5 +1,6 @@
 var express = require('express');
 var dateUtils = require('../utils/dateutils');
+var utils = require('../utils/utils');
 
 var router = express.Router();
 
@@ -49,12 +50,22 @@ router.post('/:productId', function(req,res,next) {
                         if (err) {
                             next(err);
                         } else {
-                            var comment = rows[0];
-                            comment.username = req.session.user.username;
-                            comment.userId = req.session.user.userId;
-                            comment.commentTime = dateUtils.formatDate(comment.commentTime);
-                            req.session.commentedOn.push(parseInt(pId));
-                            res.json(rows[0]);
+                            var review = rows[0];
+                            //Update product stats
+                            var updateProduct = "CALL usp_softUpdateProductStats( " + pId +", "+ values.overallRate+", "+values.learnability+","+values.easeOfUse+","+values.compatibility+","+values.documentation+")";
+
+                            req.db.query(updateProduct, function(err,rows) {
+                               if(err){
+                                   next(err);
+                               } else {
+                                   review.username = req.session.user.username;
+                                   review.userId = req.session.user.userId;
+                                   review.commentTime = dateUtils.formatDate(review.commentTime);
+                                   req.session.commentedOn.push(parseInt(pId));
+                                   res.json(review);
+                               }
+                            });
+
                         }
                     });
                 }
@@ -99,7 +110,7 @@ router.delete('/:commentId', function(req,res,next) {
         var commentId = req.params.commentId;
 
         if(!isNaN(commentId)) {
-            var query = "SELECT userId, productId FROM comments WHERE commentId = " + commentId;
+            var query = "SELECT compatibility, documentation, easeOfUse, learnability, overallRate, userId, productId FROM comments WHERE commentId = " + commentId;
 
             req.db.query(query, function(err, rows) {
                 if(err) {
@@ -119,7 +130,16 @@ router.delete('/:commentId', function(req,res,next) {
                                    }
 
                                }
-                               res.json({success:true,err:null});
+
+                               var updateProduct = "CALL usp_softRemoveUpdateProductStats( " + com.productId +", "+ com.overallRate+", "+com.learnability+","+com.easeOfUse+","+com.compatibility+","+com.documentation+")";
+
+                               req.db.query(updateProduct, function(err, rows) {
+                                  if(err){
+                                      res.json({success:false,err:err.message});
+                                  } else {
+                                      res.json({success:true,err:null});
+                                  }
+                               });
                            }
 
                         });

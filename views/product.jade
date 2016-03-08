@@ -7,46 +7,7 @@ block content
     #ratings
         a(href="/product/#{product.productName}/stats/?version=#{product.version}")
             button.btn.submit-btn Statistics
-        .rating
-            h3 Overall
-            if(product.overallRate)
-                h2.rate #{product.overallRate.toFixed(1)}/10
-                .bar.bar-back
-                    .bar#overall(style="width:#{(product.overallRate / 10.0) * 100}%")
-            else
-                h2 No Rating
-        .rating
-            h3 Learnability
-            if(product.learnability)
-                h2.rate #{product.learnability.toFixed(1)}/10
-                .bar.bar-back
-                    .bar#learnability(style="width:#{(product.learnability / 10.0) * 100}%")
-            else
-                h2 No Rating
-        .rating
-            h3 Ease of Use
-            if(product.easeOfUse)
-                h2.rate #{product.easeOfUse.toFixed(1)}/10
-                .bar.bar-back
-                    .bar#easeOfUse(style="width:#{(product.easeOfUse / 10.0) * 100}%")
-            else
-                h2 No Rating
-        .rating
-            h3 Compatibility
-            if(product.compatibility)
-                h2.rate #{product.compatibility.toFixed(1)}/10
-                .bar.bar-back
-                    .bar#compatibility(style="width:#{(product.compatibility / 10.0) * 100}%")
-            else
-                h2 No Rating
-        .rating
-            h3 Documentation
-            if(product.documentation)
-                h2.rate #{product.documentation.toFixed(1)}/10
-                .bar.bar-back
-                    .bar#documentation(style="width:#{(product.documentation / 10.0) * 100}%")
-            else
-                h2 No Rating
+        #rating-bars
         if(product.tags)
             #tags
 
@@ -125,6 +86,24 @@ block content
             });
         }
 
+        function getRatings(callback){
+            $.ajax({
+                type: "GET",
+                url: "/product/#{product.productName}/#{product.version}/ratings",
+                cache: false,
+                success: function (result) {
+                    if(result.success) {
+                        callback(result.product);
+                    } else {
+                        alert(result.err);
+                    }
+                },
+                error: function (res, p1, p2) {
+                    console.log("error:" + res);
+                }
+            });
+        }
+
         function appendComments(comments){
             offset+= comments.length;
             if(comments.length < 5){
@@ -152,6 +131,7 @@ block content
                     success: function (result) {
                         if (result.success) {
                             removeComment(comId);
+                            getRatings(setupRatings);
                         } else {
                             alert(result.err);
                         }
@@ -242,6 +222,7 @@ block content
                 success: function (result) {
                     addCreatedReview(result);
                     $('#addComment').slideUp();
+                    getRatings(setupRatings);
                 },
                 error: function (res, p1, p2) {
                     console.log("error:" + res);
@@ -250,8 +231,34 @@ block content
             });
         }
 
+        function rating(title,id,total,rate){
+            var r = $(document.createElement('div')).attr('class','rating');
+            r.append($(document.createElement('h3')).text(title));
+            if(total && rate != undefined){
+                r.append($(document.createElement('h2')).attr('class','rate').text(rate.toFixed(1) + "/10"));
+                var bar = $(document.createElement('div')).attr('class','bar-back bar');
+                bar.append($(document.createElement('div')).attr('id',id).attr('class','bar').width(((rate/10.0)*100) + "%"));
+                r.append(bar);
+            } else {
+                r.append($(document.createElement('h2')).text("No Rating"));
+            }
+            return r;
+        }
+
+
+        function setupRatings(product){
+            var bars = $("#rating-bars");
+            bars.empty();
+            bars.append(rating("Overall","overall",product.totalReviews,product.overallRate));
+            bars.append(rating("Learnability","learnability",product.totalReviews,product.learnability));
+            bars.append(rating("Ease of Use","easeOfUse",product.totalReviews,product.easeOfUse));
+            bars.append(rating("Compatibility","compatibility",product.totalReviews,product.compatibility));
+            bars.append(rating("Documentation","documentation",product.totalReviews,product.documentation));
+        }
+
         $(document).ready(function(){
            getComments(appendComments);
+            getRatings(setupRatings);
             $("#more").click(loadMore);
             $("#createReview").click(createReview);
         });

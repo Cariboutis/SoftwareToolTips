@@ -51,4 +51,6 @@ div.error {
 #controls button {
     font-size: 1em;
 }
-
+.tagit {
+    margin-top: 0;
+}

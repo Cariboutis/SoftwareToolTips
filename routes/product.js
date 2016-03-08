@@ -2,6 +2,7 @@ var url = require('url');
 var mysql = require('mysql');
 var express = require('express');
 var dateUtils = require('../utils/dateutils');
+var utils = require('../utils/utils');
 
 var router = express.Router();
 
@@ -177,7 +178,7 @@ router.get('/:pname/:vnum', function(req,res,next) {
     var vnum = req.db.escape(req.params.vnum);
     //var query = "SELECT * FROM products WHERE productName = " + pname + " AND version = " + vnum + "";
 
-    var query = "SELECT productName, description, version, overallRate, documentation, compatibility, easeOfUse, learnability, logoUrl, p.productId, uploadDate, userId, lastUpdate, GROUP_CONCAT(t.tag) as tags " +
+    var query = "SELECT totalReviews, productName, description, version, overallRate, documentation, compatibility, easeOfUse, learnability, logoUrl, p.productId, uploadDate, userId, lastUpdate, GROUP_CONCAT(t.tag) as tags " +
     " FROM products p" +
     " LEFT JOIN productTags pt" +
     " ON p.productId = pt.productId" +
@@ -227,6 +228,21 @@ router.get('/:pname/:vnum', function(req,res,next) {
         }
     });
 
+});
+
+router.get('/:pname/:vnum/ratings', function(req,res,next) {
+    var pname =  req.db.escape(req.params.pname);
+    var vnum = req.db.escape(req.params.vnum);
+    var query = "SELECT totalReviews, overallRate, documentation, compatibility, easeOfUse, learnability FROM products WHERE productName = " + pname + " AND version = " + vnum;
+
+    req.db.query(query, function(err,rows) {
+       if(err){
+           res.json({success:false,err:err.message});
+       } else {
+           var p = rows[0];
+           res.json({success:true,product:p});
+       }
+    });
 });
 
 router.get('/:pname/:vnum/edit', function(req,res,next) {

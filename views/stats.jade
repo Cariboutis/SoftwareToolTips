@@ -74,7 +74,7 @@ block bottomScripts
             .attr('class', 'd3-tip')
             .offset([-10,0])
             .html(function(d) {
-                return "<strong>Reviews: </strong><span style='color:#b82626'>" + d.length +"</span>";
+                return "<strong>Reviews: </strong><span style='color:#b82626'>" + d +"</span>";
             });
 
         function setupConsts(rateData){
@@ -93,15 +93,19 @@ block bottomScripts
             }
         }
 
+        function getBins(values) {
+            var bins = [0,0,0,0,0,0,0,0,0,0,0];
+            var i, len = values.length;
+            for (i = 0; i < len; i++) {
+                bins[values[i]]++;
+            }
+            return bins;
+        }
+
         function setupChart(rateData,p,divId,w,h){
 
             // Generate a Bates distribution of 10 random variables.
             //var values = d3.range(1000).map(d3.random.bates(10));
-            var values = rateData.map(function(r) { return r[p];});
-
-            var data = d3.layout.histogram()
-                    .bins(11) //x.ticks(10))
-                    (values);
 
             var margin = {top: 20, right: 20, bottom: 30, left: 40},
                     width = w - margin.left - margin.right,
@@ -112,6 +116,14 @@ block bottomScripts
 
             var y = d3.scale.linear()
                     .range([height, 0]);
+
+            x.domain([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+            y.domain([0, maxY]);
+
+            var values = rateData.map(function(r) { return r[p];});
+
+            var data = getBins(values);
+
 
             var xAxis = d3.svg.axis()
                     .scale(x)
@@ -131,8 +143,7 @@ block bottomScripts
 
             svg.call(tip);
 
-            x.domain([0,1,2,3,4,5,6,7,8,9,10]);
-            y.domain([0, maxY]);
+
 
             svg.append("g")
                     .attr("class", "x axis")
@@ -171,10 +182,10 @@ block bottomScripts
                     })
                     .attr("width", x.rangeBand())
                     .attr("y", function (d) {
-                        return y(d.length);
+                        return y(d);
                     })
                     .attr("height", function (d) {
-                        return height - y(d.length);
+                        return height - y(d);
                     });
 
         }
@@ -185,9 +196,7 @@ block bottomScripts
                 return r[p];
             });
 
-            var data = d3.layout.histogram()
-                    .bins(11) //x.ticks(10))
-                    (values);
+            var data = getBins(values);
 
             var margin = {top: 20, right: 20, bottom: 30, left: 40},
                     width = w - margin.left - margin.right,
@@ -220,10 +229,10 @@ block bottomScripts
                     return x(i);
                 })
                 .attr("y", function (d) {
-                    return y(d.length);
+                    return y(d);
                 })
                 .attr("height", function (d) {
-                    return height - y(d.length);
+                    return height - y(d);
                 });
 
         }
