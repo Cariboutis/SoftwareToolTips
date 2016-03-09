@@ -3,9 +3,31 @@
 
 extends layout
 
+block headStyles
+    link(rel='stylesheet', href='/stylesheets/searchStyle.css')
+    link(rel='stylesheet', href='/stylesheets/jquery.tagit.css')
+    link(rel='stylesheet', href='/stylesheets/tagit.ui-zendesk.css')
+
+block headScripts
+    script(src='/js/jquery-ui.min.js')
+    script(src='/js/tag-it.min.js')
+
 block content
     h1 #{name} - Versions
-    ul
+
+    #productTable
+        .row
+            .row-item.row-version.header Version
+            .row-item.row-rating.header Rating
+            .row-item.row-date.header Last Updated
+            .row-item.row-data.header Tags
+
         each product in products
-            li
-                a(href="/product/#{name}/#{product.version}")= product.version
+            a.no-decoration(href='/product/#{name}/#{product.version}')
+                .row.clickable-row
+                    .row-item.row-version.no-decoration #{product.version}
+                    .row-item.row-rating.no-decoration #{product.overallRate}
+                    .row-item.row-date.no-decoration #{product.lastUpdate}
+                    .row-item.row-tags
+                        each tag in product.tags
+                            .tag-static #{tag}

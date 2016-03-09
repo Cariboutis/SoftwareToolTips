@@ -38,6 +38,16 @@ tr {
     background-color: #84bce3;
 }
 
+.tag-static {
+    border: 1px solid #e8e8e8;
+    background-color: #e3e3e3;
+    border-radius: 0.25em;
+    margin: auto 0.25em auto 0.25em;
+    padding: 0.1em 0.2em 0.1em 0.2em;
+    float:left;
+    font-size: 14px;
+}
+
 .row {
     overflow: hidden;
     padding:10px;

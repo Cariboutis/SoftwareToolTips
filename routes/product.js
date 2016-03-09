@@ -101,13 +101,29 @@ router.get('/:pname', function(req,res,next) {
     req.session.lastPage = '/product/' + req.params.pname;
 
     var productName = req.db.escape(req.params.pname);
-    var selectPQ = "SELECT version FROM products WHERE productName = " + productName;
+
+    var selectPQ = "SELECT version, lastUpdate, overallRate, GROUP_CONCAT(t.tag) as tags " +
+        " FROM products p" +
+        " LEFT JOIN productTags pt" +
+        " ON p.productId = pt.productId" +
+        " LEFT JOIN tags t" +
+        " ON pt.tagId = t.tagId" +
+        " WHERE productName = " + productName +
+        " GROUP BY p.productId";
 
     req.db.query(selectPQ,  function(err, rows) {
         if(err){
             next(err);
         } else {
-            res.render('productList',{products:rows,name: req.params.pname});
+
+            rows.map(function(param) {
+                param.lastUpdate = dateUtils.formatDate(param.lastUpdate);
+                param.overallRate = param.overallRate.toFixed(1) || "No Rating";
+                param.tags = param.tags.split(',');
+                return param;
+            });
+
+            res.render('productList',{products:rows, name: req.params.pname});
         }
     });
 
