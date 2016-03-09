@@ -47,11 +47,7 @@ tr {
     cursor: hand;
 }
 
-.clickable-row:hover {
-    cursor: hand;
-    background-color: #bababa;
 
-}
 .row-item {
     float:left;
     cursor: hand;

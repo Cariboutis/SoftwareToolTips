@@ -18,14 +18,32 @@ router.get('/', function(req, res, next) {
         if(err){
             next(err); // throw err;
         } else {
-            rows = rows.map(function (product) {
+            var newProducts = rows.map(function (product) {
 
                 if (product.description && product.description.length > 255) {
                     product.description = product.description.substring(0, 254) + "...";
                 }
                 return product;
             });
-            res.render('index', {title: 'Software Tool Tips', products: rows});
+            var popQuery = "SELECT uploadDate,productName,description,logoUrl,version FROM products WHERE totalReviews>10 ORDER BY overallRate DESC limit 3 "
+            req.db.query(popQuery, function (err, rows) {
+                if (err) {
+                    next(err); // throw err;
+                } else {
+                    var popProducts = rows.map(function (product) {
+
+                        if (product.description && product.description.length > 255) {
+                            product.description = product.description.substring(0, 254) + "...";
+                        }
+                        return product;
+                    });
+                    res.render('index', {
+                        title: 'Software Tool Tips',
+                        popProducts: popProducts,
+                        newProducts: newProducts
+                    });
+                }
+            });
         }
     });
 

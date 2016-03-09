@@ -11,7 +11,9 @@ html {
     position: relative;
     min-height: 100%;
 }
+.no-decoration{text-decoration:none;
 
+}
 .main-body{
     width: 65%;
     padding-top: 1.5em;
@@ -27,6 +29,12 @@ div.col-md-6 {
 div.col-md-4 {
     width: 30%;
 }
+ /*header{*/
+    /*font-weight:bold;*/
+    /*font-size:*/
+
+
+/*}*/
 
 h4 {
     margin: 0;
@@ -51,6 +59,11 @@ label {
     max-width: 100%;
     margin: auto 0.5em auto 5px;
     font-weight: 700;
+}
+.clickable-row:hover {
+    cursor: hand;
+    background-color: #bababa;
+
 }
 
 .form-control {
