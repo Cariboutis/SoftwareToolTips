@@ -1,7 +1,7 @@
 extends layout
 
 block headStyles
-  link(rel='stylesheet', href='/stylesheets/userprofile.css')
+    link(rel='stylesheet', href='/stylesheets/userprofile.css')
 
 block content
 
@@ -10,16 +10,16 @@ block content
 
             h3 #{user.username}
             .container.image.col-md-4
-                        img.profile-image(src="#{user.profileImageUrl}")
-            p Bio:
-            p #{user.bio}
-
+                img.profile-image(src="#{user.profileImageUrl}")
 
         .col-md-6
             h3 Reviews
             .container.col-md-11
-              each comment in comments
-                .post
-                    p Overall Rating: #{comment.overallRate}
-                    p #{comment.commentBody}
-                    br
+                each comment in comments
+                    a(class="comment" href="/product/#{comment.version}")
+                        .post
+                            #title
+                                p #{comment.productName} #{comment.version}
+                            p Rating: #{comment.overallRate} / 10
+                            p #{comment.commentBody}
+                            br

@@ -1,4 +1,22 @@
 .profile-image {
-  height: 75px;
-  width: auto;
+    height: 75px;
+    width: auto;
+}
+
+.post {
+    padding: 10px;
+    text-decoration: none;
+}
+
+.post:hover {
+    cursor: pointer;
+    background-color: #dadada;
+}
+
+a.comment {
+    text-decoration: none;
+}
+
+#title {
+  font-weight: bold;
 }
