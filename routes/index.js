@@ -13,19 +13,18 @@ router.get('/', function(req, res, next) {
 
     req.session.lastPage = "/";
 
-    var query="SELECT uploadDate,productName,description,logoUrl,version FROM products ORDER BY uploadDate DESC limit 3 ";
+    var query="SELECT uploadDate,productName,description,logoUrl,version,overallRate.toFixed(1) FROM products ORDER BY uploadDate DESC limit 3 ";
     req.db.query(query, function(err, rows){
         if(err){
             next(err); // throw err;
         } else {
             var newProducts = rows.map(function (product) {
-
                 if (product.description && product.description.length > 255) {
                     product.description = product.description.substring(0, 254) + "...";
                 }
                 return product;
             });
-            var popQuery = "SELECT uploadDate,productName,description,logoUrl,version FROM products WHERE totalReviews>10 ORDER BY overallRate DESC limit 3 "
+            var popQuery = "SELECT uploadDate,productName,description,logoUrl,version,overallRate.toFixed(1) FROM products WHERE totalReviews>10 ORDER BY overallRate DESC limit 3 "
             req.db.query(popQuery, function (err, rows) {
                 if (err) {
                     next(err); // throw err;
@@ -37,6 +36,7 @@ router.get('/', function(req, res, next) {
                         }
                         return product;
                     });
+
                     res.render('index', {
                         title: 'Software Tool Tips',
                         popProducts: popProducts,

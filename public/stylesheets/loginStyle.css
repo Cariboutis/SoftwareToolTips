@@ -1,5 +1,7 @@
 #login-form {
-    background: #f5f5f5;
+    background: #f5f5f5
+
+
 }
 
 #customBtn {
@@ -7,13 +9,13 @@
     background: #4285f4;
     color: white;
     width: 190px;
-    border-radius: 5px;
+    border-radius: 10px;
     white-space: nowrap;
     margin: 1.5em auto 3em auto;
 }
-
 span.label {
     font-weight: bold;
+    text-align:center;
 }
 span.icon {
     background: url('/images/g-normal.png') transparent 5px 50% no-repeat;
@@ -28,9 +30,10 @@ span.buttonText {
     vertical-align: middle;
     padding-left: 42px;
     padding-right: 42px;
-    font-size: 14px;
+    font-size: 20px;
     font-weight: bold;
     /* Use the Roboto font that is loaded in the <head> */
     font-family: 'Roboto', sans-serif;
 }
+.h1{font-weight:bold;}
 

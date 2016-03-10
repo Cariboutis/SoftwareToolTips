@@ -56,14 +56,11 @@ tr {
     background-color:#f9f9f9;
     cursor: hand;
 }
-
-
 .row-item {
     float:left;
     cursor: hand;
     margin: auto 1em auto 1em;
 }
-
 
 #filters {
     clear:both;
@@ -119,9 +116,10 @@ input {
 }
 
 #submit {
-    width: 10%;
+    width: 20%;
     margin-top:0.45em;
     float:left;
+
 }
 
 #nameInput {
