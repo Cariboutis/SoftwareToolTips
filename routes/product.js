@@ -31,7 +31,7 @@ router.post('/new', function (req, res, next) {
         var versionNum = req.body.versionNum;
         var lastUpdate = req.body.lastUpdate;
         var description = req.body.description;
-        var now = dateUtils.today();
+        var now = new Date();//dateUtils.today();
         var tags = req.body.tags.split(",");
 
         if(lastUpdate && lastUpdate != "") {
