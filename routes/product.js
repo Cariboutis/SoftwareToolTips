@@ -303,9 +303,12 @@ router.post('/:pname/:vnum/edit', function (req, res, next) {
             var description = req.body.description;
             var tags = req.body.tags.split(",");
 
-            var d = new Date(lastUpdate);
-            lastUpdate = "'" + d.getFullYear() + "-" + dateUtils.dateAddLeadingZero(d.getMonth() + 1) + "-" + dateUtils.dateAddLeadingZero(d.getDate()) + "'";
-            //lastUpdate = d;
+            if(lastUpdate && lastUpdate != "") {
+                var d = new Date(lastUpdate);
+                lastUpdate = d.getFullYear() + "-" + dateUtils.dateAddLeadingZero(d.getMonth() + 1) + "-" + dateUtils.dateAddLeadingZero(d.getDate());
+            } else {
+                lastUpdate = null;
+            }
 
             var values = {
                 logoUrl: logoUrl,
