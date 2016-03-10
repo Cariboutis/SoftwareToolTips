@@ -17,7 +17,7 @@ router.get('/:uid', function(req,res,next) {
             next({status:400,message:"No User Found"});
         } else {
             var user = uRows[0];
-            var commentQuery = "SELECT commentBody, c.overallRate, p.productName, p.version FROM comments c left join products p on p.productId WHERE c.userId = " + user.userId + " LIMIT 5";
+            var commentQuery = "SELECT commentBody, c.overallRate, p.productName, p.version FROM comments c LEFT JOIN products p on p.productId = c.productId WHERE c.userId = " + user.userId + " LIMIT 5";
             req.db.query(commentQuery, function (err, cRows) {
                 if (err) {
                     next(err);
