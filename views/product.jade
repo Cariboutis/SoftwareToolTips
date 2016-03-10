@@ -21,6 +21,8 @@ block content
                 button.btn#edit-btn Edit Product
     #description
         h1 #{product.productName} - #{product.version}
+            a(href="/product/#{product.productName}")
+                button.btn#more-v More Versions
         img#logo(src="#{product.logoUrl}", onerror="this.style.display='none'")
         div
             h2 Description

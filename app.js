@@ -16,7 +16,6 @@ var qs              = require('querystring');
 //Routes
 var index           = require('./routes/index');
 var login           = require('./routes/login');
-var users           = require('./routes/users');
 var userprofile     = require('./routes/userprofile');
 var product         = require('./routes/product');
 var review          = require('./routes/review');
@@ -94,7 +93,6 @@ app.use(function(req,res,next) {
 // Route requests
 app.use('/', index);
 app.use('/', login);
-app.use('/users', users);
 app.use('/user', userprofile);
 app.use('/product', product);
 app.use('/review', review);

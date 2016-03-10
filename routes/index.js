@@ -8,35 +8,37 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-   // req.session.works = "yes";
+    // req.session.works = "yes";
     //res.render('index', { title: 'Software Tool Tips' });
 
     req.session.lastPage = "/";
 
-    var query="SELECT uploadDate,productName,description,logoUrl,version,overallRate.toFixed(1) FROM products ORDER BY uploadDate DESC limit 3 ";
+    var query="SELECT uploadDate,productName,description,logoUrl,version, overallRate FROM products ORDER BY uploadDate DESC limit 3 ";
     req.db.query(query, function(err, rows){
         if(err){
             next(err); // throw err;
         } else {
             var newProducts = rows.map(function (product) {
+                product.overallRate = product.overallRate.toFixed(1);
+
                 if (product.description && product.description.length > 255) {
                     product.description = product.description.substring(0, 254) + "...";
                 }
                 return product;
             });
-            var popQuery = "SELECT uploadDate,productName,description,logoUrl,version,overallRate.toFixed(1) FROM products WHERE totalReviews>10 ORDER BY overallRate DESC limit 3 "
+            var popQuery = "SELECT uploadDate,productName,description,logoUrl,version, overallRate FROM products WHERE totalReviews>10 ORDER BY overallRate DESC limit 3 ";
             req.db.query(popQuery, function (err, rows) {
                 if (err) {
                     next(err); // throw err;
                 } else {
                     var popProducts = rows.map(function (product) {
+                        product.overallRate = product.overallRate.toFixed(1);
 
                         if (product.description && product.description.length > 255) {
                             product.description = product.description.substring(0, 254) + "...";
                         }
                         return product;
                     });
-
                     res.render('index', {
                         title: 'Software Tool Tips',
                         popProducts: popProducts,
@@ -102,7 +104,7 @@ router.get('/products',function(req,res,next) {
         }
     }
 
-    query +=  " LIMIT " + pageSize;
+    query +=  " ORDER BY p.productName LIMIT " + pageSize;
     if(page > 1){
         query += " OFFSET " + (page-1) * pageSize;
     }
@@ -117,7 +119,7 @@ router.get('/products',function(req,res,next) {
         } else {
 
             rows = rows.map(function (v) {
-                if (v.d) {
+                if (v.d && v.d !== "0000-00-00") {
                     v.d = dateUtils.formatDate(v.d);
                 } else {
                     v.d = "Unknown";
@@ -138,6 +140,9 @@ router.get('/products',function(req,res,next) {
 
 
 router.get('/search', function(req,res,next) {
+
+    req.session.lastPage = "/search";
+
     var query = "SELECT tag FROM tags";
 
     req.db.query(query, function(err, rows) {
@@ -145,7 +150,7 @@ router.get('/search', function(req,res,next) {
             next(err); // throw err;
         } else {
             rows = rows.map(function(v) {
-               return v.tag;
+                return v.tag;
             });
             res.render('search', {posts:[],allTags:rows});
         }

@@ -117,9 +117,15 @@ router.get('/:pname', function(req,res,next) {
         } else {
 
             rows.map(function(param) {
-                param.lastUpdate = dateUtils.formatDate(param.lastUpdate);
+                if(param.lastUpdate && !param.lastUpdate == "0000-00-00") {
+                    param.lastUpdate = dateUtils.formatDate(param.lastUpdate);
+                } else {
+                    param.lastUpdate = "Unknown";
+                }
                 param.overallRate = param.overallRate.toFixed(1) || "No Rating";
-                param.tags = param.tags.split(',');
+                if(param.tags) {
+                    param.tags = param.tags.split(',');
+                }
                 return param;
             });
 
@@ -272,7 +278,7 @@ router.get('/:pname/:vnum/edit', function(req,res,next) {
                 if(p.userId != req.session.user.userId){
                     next("You do not have permissions to edit this product.");
                 } else {
-                    if(!p.lastUpdate) p.lastUpdate = "";
+                    if(!p.lastUpdate || p.lastUpdate == "0000-00-00") p.lastUpdate = "";
                     res.render('editProduct', {product:p});
                 }
             }

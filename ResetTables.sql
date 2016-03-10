@@ -56,7 +56,7 @@ CREATE TABLE comments
 CREATE TABLE tags
 (
     tagId int NOT NULL AUTO_INCREMENT,
-    tag varchar(25) NOT NULL UNIQUE,
+    tag varchar(50) NOT NULL UNIQUE,
     PRIMARY KEY (tagId)
 );
 
@@ -111,11 +111,18 @@ BEGIN
     DECLARE n INT DEFAULT 0;
     DECLARE i INT DEFAULT 0;
     DECLARE pId INT DEFAULT 0;
+    DECLARE des VARCHAR(4000);
     SELECT COUNT(*) FROM products INTO n;
     SET i = 0;
     WHILE i < n DO
 
         SELECT productId FROM products LIMIT i,1 INTO pId;
+
+        SET des = (CASE 1
+                  WHEN FLOOR(RAND()*(2)+1) > 1
+                  THEN 'Lorem ipsum dolor sit amet, nec cetero persequeris ne. Facilis indoctum vix ei, pri ubique fuisset deleniti ad, ei eam quem meis facilisis. Odio suscipit legendos per ea. Lorem propriae perpetua cum in, dico erat tollit ne nec, quo at congue salutandi eloquentiam. Id sea decore putant argumentum, assum liber te sit. Has illud audire ad, et eum alienum pertinax, te sed numquam postulant euripidis. Est posse fierent indoctum et, prompta quaestio sit ne, sea iusto concludaturque at.'
+                  ELSE 'Altera eripuit aliquando mea at. Ius ea errem primis, nam brute utamur consectetuer at, esse explicari cu quo. Duo ludus quaerendum cu.Per unum liber nullam cu. Pri id eruditi epicuri deleniti, nam ad quod alii apeirian, his simul percipitur te. Pro paulo feugiat neglegentur cu, in nam utinam admodum honestatis, sed cu dicam vocibus. In petentium signiferumque eam. Sit in vidisse convenire, integre quaestio nec eu, soleat apeirian adipiscing ex vix.'
+                  END);
 
         UPDATE products
             SET overallRate = (SELECT AVG(overallRate) FROM comments WHERE productId = pId),
@@ -123,13 +130,39 @@ BEGIN
                 easeOfUse = (SELECT AVG(easeOfUse) FROM comments WHERE productId = pId),
                 compatibility = (SELECT AVG(compatibility) FROM comments WHERE productId = pId),
                 documentation = (SELECT AVG(documentation) FROM comments WHERE productId = pId),
-                totalReviews = (SELECT COUNT(commentId) FROM comments WHERE productId = pId)
+                totalReviews = (SELECT COUNT(commentId) FROM comments WHERE productId = pId),
+                description = des
             WHERE productId = pId;
 
         SET i = i + 1;
     END WHILE;
 
 
+
+END
+$$
+
+DROP PROCEDURE IF EXISTS addPython$$
+CREATE PROCEDURE addPython()
+BEGIN
+    DECLARE pId INT;
+
+    INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, overallRate,learnability,easeOfUse,compatibility,documentation,description, uploadDate, totalReviews) VALUES ('Python','http://python.net/~goodger/projects/graphics/python/newlogo-repro.png','2.7','2016-03-07',1,8.75,9.75,9.75,6.75,9.25, 'Python is a widely used high-level, general-purpose, interpreted, dynamic programming language. Its design philosophy emphasizes code readability, and its syntax allows programmers to express concepts in fewer lines of code than would be possible in languages such as C++ or Java. The language provides constructs intended to enable clear programs on both a small and large scale.',NOW(),4 );
+    INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, overallRate,learnability,easeOfUse,compatibility,documentation,description, uploadDate, totalReviews) VALUES ('Python','http://python.net/~goodger/projects/graphics/python/newlogo-repro.png','3.5','2016-03-08',1,7.5,7,7.5,6.5,9.5, 'Python is a widely used high-level, general-purpose, interpreted, dynamic programming language. Its design philosophy emphasizes code readability, and its syntax allows programmers to express concepts in fewer lines of code than would be possible in languages such as C++ or Java. The language provides constructs intended to enable clear programs on both a small and large scale.',NOW(),4 );
+
+    SELECT productId  INTO pId FROM products  WHERE productName='Python' AND version='2.7';
+    INSERT INTO comments (productId, userId, overallRate, learnability, easeOfUse, compatibility, documentation, commentBody, commentTime) VALUES (pId, 2, 8.5, 10.0, 10.0, 6.5, 9.0, 'Python is easy to use when you get the hang of it.', '2016-02-01 10:09:30');
+    INSERT INTO comments (productId, userId, overallRate, learnability, easeOfUse, compatibility, documentation, commentBody, commentTime) VALUES (pId, 3, 7.0, 9.0, 8.5, 5.0, 8.0, 'Do not start using Python 2 if you are new. Python 3 is the future and is constantly getting better.', '2016-02-01 10:09:30');
+    INSERT INTO comments (productId, userId, overallRate, learnability, easeOfUse, compatibility, documentation, commentBody, commentTime) VALUES (pId, 4, 9.0, 9.5, 9.5, 7.0, 9.5, 'Great scripting language for beginners.', '2016-02-01 10:09:30');
+    INSERT INTO comments (productId, userId, overallRate, learnability, easeOfUse, compatibility, documentation, commentBody, commentTime) VALUES (pId, 5, 10.0, 9.8, 9.8, 8.0, 10.0, 'There is a module for everything. Nothing is out of reach for this language.', '2016-02-01 10:09:30');
+    INSERT INTO productTags (productId, tagId) VALUES (pId,17);
+
+    SELECT productId  INTO pId FROM products WHERE productName='Python' AND version='3.5';
+    INSERT INTO comments (productId, userId, overallRate, learnability, easeOfUse, compatibility, documentation, commentBody, commentTime) VALUES (pId, 2, 6.5, 7.0, 7.0, 5.5, 8.5, 'I miss all my modules from Python 2.', '2016-02-01 10:09:30');
+    INSERT INTO comments (productId, userId, overallRate, learnability, easeOfUse, compatibility, documentation, commentBody, commentTime) VALUES (pId, 3, 7.5, 6.5, 8.5, 3.5, 9.5, 'Very well documented, but lacks some of the capability of python 2. For now anyway.', '2016-02-01 10:09:30');
+    INSERT INTO comments (productId, userId, overallRate, learnability, easeOfUse, compatibility, documentation, commentBody, commentTime) VALUES (pId, 4, 10.0, 10.0, 10.0, 9.5, 10.0, 'It reads like a dream as it forces correct indentation.', '2016-02-01 10:09:30');
+    INSERT INTO comments (productId, userId, overallRate, learnability, easeOfUse, compatibility, documentation, commentBody, commentTime) VALUES (pId, 5, 5.0, 4.0, 4.0, 6.0, 8.5, 'I hate how I need to typecast and other such things. Python 2 was way better for the lazy man.', '2016-02-01 10:09:30');
+    INSERT INTO productTags (productId, tagId) VALUES (pId,17);
 
 END
 $$
@@ -182,14 +215,35 @@ $$
 
 DELIMITER ;
 
+
+INSERT INTO tags (tag) VALUES ('web server');
+INSERT INTO tags (tag) VALUES ('javaScript');
+INSERT INTO tags (tag) VALUES ('java');
+INSERT INTO tags (tag) VALUES ('c');
+INSERT INTO tags (tag) VALUES ('php');
+INSERT INTO tags (tag) VALUES ('web framework');
+INSERT INTO tags (tag) VALUES ('javascript framework');
+INSERT INTO tags (tag) VALUES ('windows');
+INSERT INTO tags (tag) VALUES ('linux');
+INSERT INTO tags (tag) VALUES ('osx');
+INSERT INTO tags (tag) VALUES ('android');
+INSERT INTO tags (tag) VALUES ('ios');
+INSERT INTO tags (tag) VALUES ('database');
+INSERT INTO tags (tag) VALUES ('operating system');
+INSERT INTO tags (tag) VALUES ('library');
+INSERT INTO tags (tag) VALUES ('framework');
+INSERT INTO tags (tag) VALUES ('python');
+INSERT INTO tags (tag) VALUES ('cryptography');
+INSERT INTO tags (tag) VALUES ('security');
+
 INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, overallRate,learnability,easeOfUse,compatibility,documentation,description, uploadDate) VALUES ('MAMP','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','1.0','2015-10-01',1,1.3,5.6,9,3.4,7.5, 'MAMP installs a local server environment in a matter of seconds on your computer. It comes free of charge, and is easily installed. MAMP will not compromise any existing Apache installation already running on your system. You can install Apache, PHP and MySQL without starting a script or having to change any configuration files! Furthermore, if MAMP is no longer needed, just delete the MAMP folder and everything returns to its original state (i.e. MAMP does not modify any of the "normal" system).Similar to a Linux-Distribution, MAMP is a combination of free software and thus it is offered free of charge. MAMP is released under the GNU General Public License and may thereby be distributed freely within the boundaries of this license. Please note: some of the included software is released using a different license. In these cases, the corresponding license applies.','2013-11-13 02:30:30');
 INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, overallRate,learnability,easeOfUse,compatibility,documentation,description, uploadDate) VALUES ('MAMP','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','2.0','2015-10-01',1,1.3,5.6,9,3.4,7.5, 'MAMP installs a local server environment in a matter of seconds on your computer. It comes free of charge, and is easily installed. MAMP will not compromise any existing Apache installation already running on your system. You can install Apache, PHP and MySQL without starting a script or having to change any configuration files! Furthermore, if MAMP is no longer needed, just delete the MAMP folder and everything returns to its original state (i.e. MAMP does not modify any of the "normal" system).Similar to a Linux-Distribution, MAMP is a combination of free software and thus it is offered free of charge. MAMP is released under the GNU General Public License and may thereby be distributed freely within the boundaries of this license. Please note: some of the included software is released using a different license. In these cases, the corresponding license applies.','2014-11-13 02:30:30');
 INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, overallRate,learnability,easeOfUse,compatibility,documentation,description, uploadDate) VALUES ('MAMP','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','3.0','2015-10-01',1,1.3,5.6,9,3.4,7.5, 'MAMP installs a local server environment in a matter of seconds on your computer. It comes free of charge, and is easily installed. MAMP will not compromise any existing Apache installation already running on your system. You can install Apache, PHP and MySQL without starting a script or having to change any configuration files! Furthermore, if MAMP is no longer needed, just delete the MAMP folder and everything returns to its original state (i.e. MAMP does not modify any of the "normal" system).Similar to a Linux-Distribution, MAMP is a combination of free software and thus it is offered free of charge. MAMP is released under the GNU General Public License and may thereby be distributed freely within the boundaries of this license. Please note: some of the included software is released using a different license. In these cases, the corresponding license applies.',NOW());
-INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, uploadDate) VALUES ('AAAB','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','1.3','2015-08-15',1,'2009-5-13-2014 01:30:10');
-INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, uploadDate) VALUES ('AAAC','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','1.0','2015-10-17',4,'2010-11-13 02:30:30');
-INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, uploadDate) VALUES ('AAAD','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','2.3','2015-10-12',3,'2016-02-22 02:30:30');
-INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, uploadDate) VALUES ('AAAE','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','3.5','2015-06-11',5,'2016-12-15 02:30:10');
-INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, uploadDate) VALUES ('AAAF','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','5.5','2015-11-10',4,'2015-11-10 04:30:00');
+INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, uploadDate) VALUES ('AAAB','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','1.3','2015-08-15',1,NOW());
+INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, uploadDate) VALUES ('AAAC','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','1.0','2015-10-17',4,NOW());
+INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, uploadDate) VALUES ('AAAD','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','2.3','2015-10-12',3,NOW());
+INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, uploadDate) VALUES ('AAAE','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','3.5','2015-06-11',5,NOW());
+INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, uploadDate) VALUES ('AAAF','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','5.5','2015-11-10',4,NOW());
 INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, overallRate,learnability,easeOfUse,compatibility,documentation,description, uploadDate) VALUES ('AA','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','1.0','2015-11-01',2,5.9,4.9,6.8,9.0,4.7, 'Words can do it no justice, so I wont write any.',NOW());
 INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, overallRate,learnability,easeOfUse,compatibility,documentation,description, uploadDate) VALUES ('AA','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','2.0','2015-11-01',3,0.9,3.0,9.6,1.2,4.9, 'Dont buy it',NOW());
 INSERT INTO products (productName, logoUrl, version, lastUpdate, userId, overallRate,learnability,easeOfUse,compatibility,documentation,description, uploadDate) VALUES ('AA','https://pbs.twimg.com/profile_images/440835187933339648/J0eyUcj6.png','3.0','2015-11-01',2,0.6,8.0,0.2,2.8,6.7, 'Four words. Use it.',NOW());
@@ -3642,25 +3696,6 @@ INSERT INTO comments (productId, userId, overallRate, learnability, easeOfUse, c
 INSERT INTO comments (productId, userId, overallRate, learnability, easeOfUse, compatibility, documentation, commentBody, commentTime) VALUES (200, 2, 2.4, 6.6, 9.8, 4.7, 1.8, 'No reward is worth this.', '2016-02-01 10:09:30');
 
 
-INSERT INTO tags (tag) VALUES ('web server');
-INSERT INTO tags (tag) VALUES ('javaScript');
-INSERT INTO tags (tag) VALUES ('java');
-INSERT INTO tags (tag) VALUES ('c');
-INSERT INTO tags (tag) VALUES ('php');
-INSERT INTO tags (tag) VALUES ('web framework');
-INSERT INTO tags (tag) VALUES ('javascript framework');
-INSERT INTO tags (tag) VALUES ('windows');
-INSERT INTO tags (tag) VALUES ('linux');
-INSERT INTO tags (tag) VALUES ('osx');
-INSERT INTO tags (tag) VALUES ('android');
-INSERT INTO tags (tag) VALUES ('ios');
-INSERT INTO tags (tag) VALUES ('database');
-INSERT INTO tags (tag) VALUES ('operating system');
-INSERT INTO tags (tag) VALUES ('library');
-INSERT INTO tags (tag) VALUES ('framework');
-INSERT INTO tags (tag) VALUES ('python');
-INSERT INTO tags (tag) VALUES ('cryptography');
-INSERT INTO tags (tag) VALUES ('security');
 
 
 INSERT INTO productTags (productId, tagId) VALUES (1,1);

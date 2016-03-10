@@ -29,5 +29,6 @@ block content
                     .row-item.row-rating.no-decoration #{product.overallRate}
                     .row-item.row-date.no-decoration #{product.lastUpdate}
                     .row-item.row-tags
-                        each tag in product.tags
-                            .tag-static #{tag}
+                        if(product.tags)
+                            each tag in product.tags
+                                .tag-static #{tag}

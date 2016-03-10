@@ -16,7 +16,7 @@ block content
             h3 Reviews
             .container.col-md-11
                 each comment in comments
-                    a(class="comment" href="/product/#{comment.version}")
+                    a(class="comment" href="/product/#{comment.productName}/#{comment.version}")
                         .post
                             #title
                                 p #{comment.productName} #{comment.version}

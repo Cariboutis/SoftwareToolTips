@@ -17,11 +17,9 @@ body {
 .navbar-header a{
     display: block;
     color: white;
-    font-weight:bold;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
-    font-family:Helvetica;
 }
 
 ul.topnav {
@@ -49,8 +47,6 @@ ul.topnav li a.active {background-color: #4CAF50;}
 ul.topnav ul.right {
     float: right;
     list-style-type: none;
-    font-weight:bold;
-    font-family:Helvetica;
 }
 
 @media screen and (max-width: 600px){

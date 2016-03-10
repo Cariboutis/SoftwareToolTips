@@ -17,22 +17,25 @@ block content
                 each product in newProducts
                     a.no-decoration(href="/product/#{product.productName}/#{product.version}")
                         .post.clickable-row
-                            h4.no-decoration= product.productName + " - " + product.version
+                            h2.title= product.productName + " - " + product.version
+                            br
+                            h1.rating= product.overallRate + "/10"
                             .container.image.col-md-4
-                               img(src="#{product.logoUrl}",class="logo")
-                            p.no-decoration= product.description
-                            p.no-decoration=product.round
+                                img(src="#{product.logoUrl}",class="logo")
+                            p= product.description
+
         #popular.col-md-6
-            h2 Popular Posts
+            h3 Popular Posts
             .container.col-md-11
                 each product in popProducts
-                    .post.clickable-row
-                        h4.no-decoration= product.productName + " - " + product.version
-                        .container.image.col-md-4
-                            img(src="#{product.logoUrl}",class="logo")
-                        p.no-decoration= product.description
-                        p.no-decoration=product.overallRate
-
+                    a.no-decoration(href="/product/#{product.productName}/#{product.version}")
+                        .post.clickable-row
+                            h2.title= product.productName + " - " + product.version
+                            br
+                            h1.rating= product.overallRate + "/10"
+                            .container.image.col-md-4
+                                img(src="#{product.logoUrl}",class="logo")
+                            p= product.description
 
 
 
