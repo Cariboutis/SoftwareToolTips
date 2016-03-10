@@ -117,7 +117,7 @@ router.get('/:pname', function(req,res,next) {
         } else {
 
             rows.map(function(param) {
-                if(param.lastUpdate && !param.lastUpdate == "0000-00-00") {
+                if(param.lastUpdate && param.lastUpdate !== "0000-00-00") {
                     param.lastUpdate = dateUtils.formatDate(param.lastUpdate);
                 } else {
                     param.lastUpdate = "Unknown";
@@ -305,6 +305,7 @@ router.post('/:pname/:vnum/edit', function (req, res, next) {
 
             var d = new Date(lastUpdate);
             lastUpdate = "'" + d.getFullYear() + "-" + dateUtils.dateAddLeadingZero(d.getMonth() + 1) + "-" + dateUtils.dateAddLeadingZero(d.getDate()) + "'";
+            //lastUpdate = d;
 
             var values = {
                 logoUrl: logoUrl,
